@@ -1,0 +1,930 @@
+% AUTHORITATIVE LIVE-EDITED MANUSCRIPT: preserve in-place editorial changes.
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,booktabs,array,microtype}
+\usepackage[margin=24mm,headheight=14pt]{geometry}
+
+\usepackage{fancyhdr}
+\usepackage[hidelinks]{hyperref}
+\hypersetup{pdftitle={Finite-feature identification of stable Ornstein-Uhlenbeck dynamics with unknown observation noise},pdfauthor={ZHANG WENHAN},pdfsubject={Finite-feature identification and frequency conditioning}}
+\DeclareMathSizes{10}{10}{8}{6}
+\DeclareMathSizes{9}{9}{8}{6}
+\setlength{\parskip}{3pt}
+\setlength{\parindent}{1.3em}
+\setlength{\emergencystretch}{2em}
+\clubpenalty=10000
+\widowpenalty=10000
+\displaywidowpenalty=10000
+\raggedbottom
+\renewcommand{\arraystretch}{1.08}
+\setlength{\abovecaptionskip}{7pt}
+\setlength{\belowcaptionskip}{6pt}
+\renewcommand{\topfraction}{0.85}
+\renewcommand{\bottomfraction}{0.7}
+\renewcommand{\textfraction}{0.12}
+\renewcommand{\floatpagefraction}{0.75}
+
+\pagestyle{fancy}\fancyhf{}
+\fancyhead[L]{\small Stable OU dynamics under unknown iid noise}
+\fancyhead[R]{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0.3pt}
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{remark}\newtheorem{remark}[theorem]{Remark}
+\newcommand{\E}{\mathbb E}\newcommand{\Pp}{\mathbb P}
+\newcommand{\R}{\mathbb R}\newcommand{\norm}[1]{\left\lVert#1\right\rVert}
+\newcommand{\tht}{\theta}\newcommand{\hD}{\widehat D}\newcommand{\hG}{\widehat\Gamma}
+\DeclareMathOperator{\Cov}{Cov}\DeclareMathOperator{\Var}{Var}
+\DeclareMathOperator{\diag}{diag}\DeclareMathOperator{\sgn}{sgn}
+\DeclareMathOperator{\Vol}{Vol}\DeclareMathOperator*{\argmin}{arg\,min}
+\title{\vspace{-1.5em}Finite-Feature Identification of Stable\\Ornstein--Uhlenbeck Dynamics\\with Unknown Observation Noise}
+% Author details supplied by the author. Undergraduate status is not an academic title.
+\author{ZHANG WENHAN\\[0.4em]
+\small Institute of Mathematical Sciences, Faculty of Science\\
+\small Universiti Malaya, 50603 Kuala Lumpur, Malaysia\\
+\small\href{mailto:24084017@siswa.um.edu.my}{24084017@siswa.um.edu.my}}
+\date{}
+\begin{document}
+\maketitle\thispagestyle{plain}
+\begin{abstract}
+We establish finite-feature identification for a stationary symmetric stable Ornstein--Uhlenbeck process observed at fixed intervals with additive iid errors of unknown distribution. Three specified log-modulus dependence features determine the mean-reversion rate, stable index and stationary scale without error-moment assumptions. The central step is a strict doubled-lag ratio inequality, which yields a constructive global inverse, full differential rank and compact inverse stability. Quantitative sensitivity bounds show how small frequencies can weaken the feature map even when characteristic functions are well separated. A dyadic frequency rule gives pointwise strong consistency, and a separate five-feature construction identifies the signal under additional independent correlated Gaussian noise. Fixed-grid asymptotic inference is complemented by a conservative finite-record confidence region and an obstruction to uniformly informative regions over unrestricted noise severity. Simulations illustrate persistent short-record undercoverage and severe five-feature instability near the Gaussian endpoint, delineating the practical scope of the identification results.
+\end{abstract}
+\noindent\textbf{Keywords:} stable OU process; measurement error; codifference; global identification; empirical characteristic function; long-run covariance.
+
+\section{Introduction}
+Additive recording error changes the marginal distribution of a stable process, confounding the signal scale and tail behavior with those of the error. Positive-lag dependence retains information that independent errors do not alter. We ask whether a specified finite collection of dependence features determines all three dynamic parameters of a stable Ornstein--Uhlenbeck (OU) process when the error distribution is unknown.
+
+Observations are taken at a known fixed interval, and their duration increases. The targets are the mean-reversion rate $\kappa$, stable index $\alpha\in(1,2)$ and stationary exponent coefficient $C$. The error law is unrestricted within the independent iid class and may lack a first moment. Signal location remains confounded with error location.
+
+\paragraph{Main contribution.}
+Theorem~\ref{thm:three} gives a global inverse from three scalar dependence features. Frequency homogeneity recovers $\alpha$; a strict doubled-lag ratio inequality gives a unique scalar inverse for $\kappa$; amplitude then recovers $C$. The proof establishes full differential rank and compact inverse stability throughout the interior parameter domain. This specified inverse, and the strict monotonicity argument that makes it unique, form the central result. Only a one-dimensional root calculation is required.
+
+\paragraph{Supporting results and scope.}
+Proposition~\ref{prop:frequency} quantifies the sensitivity of the inverse and the loss of feature conditioning at small frequencies. Theorem~\ref{thm:adaptive} removes prior knowledge of a safe frequency for pointwise consistency. A separate five-feature extension identifies the signal and two nuisance covariances under independent correlated Gaussian recording noise. These results support identification under the stated observation models. Inference requires additional conditions: Sections~\ref{sec:stats}--\ref{sec:limits} distinguish fixed-grid asymptotics, finite-record coverage and the information retained by a confidence region. The numerical study examines these distinctions rather than optimizing a universal estimation procedure.
+
+\paragraph{Relation to previous work.}
+Stable AR(1) codifference kernels are established \cite{nw,rd,rosadi}, as are empirical characteristic-function estimation and non-Gaussian OU estimation \cite{ky,tl,chl}. Positive-lag iid-noise cancellation follows from independent-component CF factorization. Unknown-noise cross-product contrasts \cite{gl,gl22} exploit this factorization under different signal assumptions; high-lag errors-in-variables methods address noisy infinite-variance autoregression under suitable integrability \cite{zw}. The doubled-lag statistic used here is algebraically available from normalized codifferences. Our analysis supplies its strict whole-domain inversion for the specified features and the associated sensitivity results. Appendix~\ref{app:comparison} gives direct algebraic and assumption comparisons; the supplementary literature matrix records unresolved version-specific comparisons. No priority claim is made for the underlying codifference, ECF or batch-calibration principles.
+
+Sections~\ref{sec:model}--\ref{sec:id} present the model and identification argument. Sections~\ref{sec:stats}--\ref{sec:limits} give estimation and inferential guarantees, with technical proofs collected in Appendix~\ref{app:technical}. Section~\ref{sec:numerics} reports paired numerical diagnostics, and Section~\ref{sec:discussion} discusses their implications. Reproduction records and code accompany the manuscript as supplementary material.
+
+\section{Model and the noise-invariant interaction}\label{sec:model}
+Let the latent process be the stationary solution of
+\begin{equation}\label{eq:sde}
+dX_t=\kappa(\mu-X_t)\,dt+\sigma\,dL_t^{(\alpha)},\qquad
+\E e^{iuL_t^{(\alpha)}}=e^{-t|u|^\alpha},\quad \kappa,\sigma>0,\quad1<\alpha<2.
+\end{equation}
+Fix a known interval $h>0$, write $X_j=X_{jh}$, and set
+\begin{equation}\label{eq:skeleton}
+C=\frac{\sigma^\alpha}{\alpha\kappa},\qquad
+\phi=e^{-\kappa h},\qquad
+X_{j+1}-\mu=\phi(X_j-\mu)+s_h Z_{j+1},\quad
+s_h^\alpha=C(1-\phi^\alpha).
+\end{equation}
+Here the $Z_j$ are independent standard symmetric stable variables with CF $e^{-|u|^\alpha}$ and are independent of the sampled past. The stationary marginal CF is $e^{i\mu u-C|u|^\alpha}$, since the stable convolution exponent is $\sigma^\alpha\int_0^\infty e^{-\alpha\kappa s}ds=C$.
+
+We observe $Y_j=X_j+\varepsilon_j$, $j=0,\ldots,n$. The errors are iid and independent of the \emph{entire} latent process; their distribution is otherwise unrestricted. In particular, no error moments are required. Serially correlated errors, state-dependent errors and temporally clustered contamination are outside this baseline. The target is $\theta=(\kappa,\alpha,C)$ in
+$\mathcal T=(0,\infty)\times(1,2)\times(0,\infty)$.
+Location is not identified: adding $b$ to the signal and subtracting $b$ from every error leaves $Y$ unchanged. After identifying $\theta$, $\sigma=(\alpha\kappa C)^{1/\alpha}$ is determined.
+
+For a positive integer lag $\ell$, write $r_\ell=e^{-\kappa h\ell}$ and define, where the CFs are nonzero,
+\begin{equation}\label{eq:Ddef}
+D_\ell(u,v)=\log|\E e^{i(uY_0+vY_\ell)}|
+-\log|\E e^{iuY_0}|-\log|\E e^{ivY_\ell}|.
+\end{equation}
+The modulus removes locations and avoids a complex-logarithm branch choice.
+
+\begin{proposition}[Population cancellation]\label{prop:cancel}
+Under the baseline model,
+\begin{equation}\label{eq:kernel}
+D_\ell(u,v;\theta)=C\{|u|^\alpha+|r_\ell v|^\alpha-|u+r_\ell v|^\alpha\}.
+\end{equation}
+For each error law, the interaction is defined on a neighborhood of the origin.
+\end{proposition}
+\begin{proof}
+The transition gives $X_\ell-\mu=r_\ell(X_0-\mu)+W_\ell$ with independent $W_\ell$ of exponent coefficient $C(1-r_\ell^\alpha)$. Hence the latent joint log modulus is
+$-C|u+r_\ell v|^\alpha-C(1-r_\ell^\alpha)|v|^\alpha$.
+Independent errors multiply the joint CF by $\chi_\varepsilon(u)\chi_\varepsilon(v)$ and the two marginal CFs by their respective factors. Subtraction cancels these terms and gives \eqref{eq:kernel}. Every CF is continuous and equals one at zero, so all factors are nonzero sufficiently near the origin.
+\end{proof}
+
+The restriction $\ell\ge1$ is essential. At zero lag the joint noise factor is $\chi_\varepsilon(u+v)$, which generally does not factorize. Cancellation is a population identity; empirical noisy and clean interactions need not agree. A neighborhood exists for each noise law, but there is no common nonzero numerical frequency guaranteed safe for every law.
+
+\section{Constructive identification from three features}\label{sec:id}
+For $0<r<1$ define the positive shapes
+\begin{equation}\label{eq:shapes}
+f_\alpha(r)=(1+r)^\alpha-1-r^\alpha,\qquad
+g_\alpha(r)=1+r^\alpha-(1-r)^\alpha.
+\end{equation}
+Thus $-D_\ell(u,u)=Cu^\alpha f_\alpha(r_\ell)$ and
+$D_\ell(u,-u)=Cu^\alpha g_\alpha(r_\ell)$ for $u>0$.
+
+\begin{lemma}[Strict doubled-lag monotonicity]\label{lem:ratio}
+For $m_\alpha=f_\alpha$ or $g_\alpha$, the map
+$q_{m,\alpha}(r)=m_\alpha(r^2)/m_\alpha(r)$ is a $C^1$ bijection from $(0,1)$ to $(0,1)$ with strictly positive derivative. With $E_m(r)=rm_\alpha'(r)/m_\alpha(r)$,
+\begin{equation}\label{eq:elasticity}
+\frac\alpha2<E_f(r)<1,\qquad
+\frac\alpha2<E_g(r)<\alpha,\qquad
+\frac{rq'_{m,\alpha}(r)}{q_{m,\alpha}(r)}=2E_m(r^2)-E_m(r)>0.
+\end{equation}
+For $m=f$, the last expression exceeds $\alpha-1$.
+\end{lemma}
+\begin{proof}
+Both shapes vanish at zero and have positive derivatives:
+\[
+f_\alpha'(r)=\alpha\{(1+r)^{\alpha-1}-r^{\alpha-1}\},\qquad
+g_\alpha'(r)=\alpha\{r^{\alpha-1}+(1-r)^{\alpha-1}\}.
+\]
+Since $\alpha-2<0$, $f_\alpha''(r)<0$. Strict concavity and $f_\alpha(0)=0$ imply $rf_\alpha'(r)<f_\alpha(r)$, establishing $E_f<1$. Direct algebra gives
+\[
+2rf_\alpha'(r)-\alpha f_\alpha(r)
+=\alpha\{1-r^\alpha-(1-r)(1+r)^{\alpha-1}\}.
+\]
+Put $x=r/(1+r)\in(0,1/2)$ and
+$H_\alpha(x)=(1-x)^\alpha-x^\alpha-1+2x$.
+Its endpoint values are zero, while
+$H_\alpha''(x)=\alpha(\alpha-1)\{(1-x)^{\alpha-2}-x^{\alpha-2}\}<0$.
+Therefore $H_\alpha(x)>0$. Multiplying by $(1+r)^\alpha$ proves that the preceding braces are positive, so $E_f>\alpha/2$.
+
+For the second shape,
+\begin{align*}
+rg_\alpha'(r)-\alpha g_\alpha(r)&=\alpha\{(1-r)^{\alpha-1}-1\}<0,\\
+2rg_\alpha'(r)-\alpha g_\alpha(r)&=\alpha\{r^\alpha+(1+r)(1-r)^{\alpha-1}-1\}>0.
+\end{align*}
+Indeed $(1-r)^{\alpha-1}>1-r$, so the last braces exceed $r^\alpha-r^2>0$. This proves $\alpha/2<E_g<\alpha$.
+
+Logarithmic differentiation gives the last equality in \eqref{eq:elasticity}. The bounds imply $2E_f(r^2)-E_f(r)>\alpha-1>0$ and $2E_g(r^2)-E_g(r)>\alpha-\alpha=0$.
+Finally $m_\alpha(r)/r\to\alpha$ as $r\downarrow0$, giving $q_{m,\alpha}(r)\to0$. As $r\uparrow1$, the ratio tends to one because $f_\alpha(1)=2^\alpha-2>0$ and $g_\alpha(1)=2$. Strict monotonicity and continuity complete the proof.
+\end{proof}
+
+\par\medskip\noindent\begin{minipage}{\linewidth}
+\begin{theorem}[Three-feature global inverse]\label{thm:three}
+Fix $h>0$, an integer $\ell\ge1$, $u>0$, $a>1$ and $d\in\{-1,1\}$. The three cells
+\begin{equation}\label{eq:cells}
+S_d=\{(\ell,u,du),(\ell,au,dau),(2\ell,u,du)\}
+\end{equation}
+identify $\theta$ globally on $\mathcal T$, provided their observed interactions are defined. Their parameter Jacobian is nonsingular throughout $\mathcal T$.
+Any fixed finite grid $S$ containing $S_d$ has an injective model map
+$F_S(\theta)=(D_j(u,v;\theta))_{(j,u,v)\in S}$ of full column rank. On every nonempty compact $\Theta\subset\mathcal T$ there is $c_\Theta>0$ such that
+\begin{equation}\label{eq:inversebound}
+\norm{F_S(\theta)-F_S(\eta)}\ge c_\Theta\norm{\theta-\eta},\qquad \theta,\eta\in\Theta.
+\end{equation}
+\end{theorem}
+\end{minipage}\par\medskip
+\begin{proof}
+Let $m=f$ if $d=1$ and $m=g$ if $d=-1$. Set
+\[
+Z_1=-dD_\ell(u,du),\quad Z_2=-dD_\ell(au,dau),\quad
+Z_3=-dD_{2\ell}(u,du),\quad r=e^{-\kappa h\ell}.
+\]
+Equation~\eqref{eq:kernel} yields
+$Z_1=Cu^\alpha m_\alpha(r)$, $Z_2=a^\alpha Z_1$ and
+$Z_3=Cu^\alpha m_\alpha(r^2)$. All are positive. Hence
+\begin{equation}\label{eq:inverse}
+\alpha=\frac{\log(Z_2/Z_1)}{\log a},\qquad
+r=q_{m,\alpha}^{-1}(Z_3/Z_1),\qquad
+\kappa=-\frac{\log r}{h\ell},\qquad
+C=\frac{Z_1}{u^\alpha m_\alpha(r)}.
+\end{equation}
+Lemma~\ref{lem:ratio} makes the scalar inverse unique, proving global identification.
+
+Transform $Z$ to $(\log(Z_2/Z_1)/\log a,Z_3/Z_1,Z_1)=(\alpha,q,Z_1)$.
+Its Jacobian determinant with respect to $Z$ is $(Z_1Z_2\log a)^{-1}$.
+In parameter order $(\alpha,\kappa,C)$, the transformed Jacobian is lower triangular, with diagonal entries
+$1$, $-h\ell r q'_{m,\alpha}(r)$ and $u^\alpha m_\alpha(r)$.
+They are nonzero. Equivalently, in order $(\kappa,\alpha,C)$,
+\begin{equation}\label{eq:det}
+\det\frac{\partial Z}{\partial(\kappa,\alpha,C)}
+=h\ell r q'_{m,\alpha}(r)u^\alpha m_\alpha(r)Z_1Z_2\log a>0.
+\end{equation}
+Adding rows preserves injectivity and rank.
+
+For a compact $\Theta$, continuity gives a positive minimum singular value $s_0$ for $J_S$. The model map is $C^1$ on an open neighborhood of $\Theta$: at a cancellation cell $u+r_jv=0$, $|x|^\alpha$ still has a continuous first derivative since $\alpha>1$.
+Uniform continuity of $J_S$ on a compact neighborhood therefore gives, for all sufficiently close $\theta,\eta\in\Theta$,
+\[
+\norm{F_S(\eta)-F_S(\theta)-J_S(\theta)(\eta-\theta)}
+\le \tfrac12s_0\norm{\eta-\theta}.
+\]
+The short connecting segments stay in the open domain, so these pairs satisfy \eqref{eq:inversebound} with $s_0/2$. Pairs separated by the chosen positive distance form a compact subset of $\Theta^2$. On that set, injectivity and continuity give a positive minimum of the ratio in \eqref{eq:inversebound}. Taking the smaller constant proves the claim, without requiring $\Theta$ to be convex.
+\end{proof}
+
+\paragraph{Exact image and empirical admissibility.}
+The signed feature image is exactly the open set
+\begin{equation}\label{eq:image}
+\mathcal Z_a=\{z\in\R^3:z_1>0,\ a<z_2/z_1<a^2,\ 0<z_3/z_1<1\}.
+\end{equation}
+Necessity follows from $Z_2/Z_1=a^\alpha$ and the range of $q$. Conversely, every point of this set gives $1<\alpha<2$, a unique $0<r<1$ and positive $\kappa,C$ through \eqref{eq:inverse}. The implicit function theorem makes the inverse $C^1$. For a restricted fitting box, the inverse must additionally belong to that box. Empirical features can violate either condition.
+
+The theorem certifies both the nine-cell opposite-direction grid with lags $1,5,10$ and frequencies $.25,.5,.75$, and its 36-cell extension with $v/u\in\{-1,-.5,.5,1\}$: each contains \eqref{eq:cells} with $(\ell,u,a)=(5,.25,2)$. Arbitrary cell deletion need not preserve this certificate. Nor does rank give a useful global numerical conditioning constant: constants deteriorate near vanishing scale, very fast mean reversion, or, for the positive-direction shape, $\alpha\downarrow1$. At $\alpha=2$, both shapes equal $2r$ and the two-lag algebra still identifies drift and scale under iid errors, but the following interior asymptotic theorems do not cover a true endpoint.
+
+
+\subsection{Quantitative sensitivity and frequency choice}\label{sec:conditioning}
+The compact bound in Theorem~\ref{thm:three} is qualitative. Two additional consequences distinguish scalar inversion from frequency design.
+\begin{proposition}[Scalar inverse sensitivity and small frequencies]\label{prop:frequency}
+For the positive-direction shape $f$, at a fixed $\alpha\in(1,2)$, two ratios $q_f(r_1),q_f(r_2)$ satisfy
+\begin{equation}\label{eq:scalarbound}
+|\kappa_1-\kappa_2|\le
+\frac{|\log q_{f,\alpha}(r_1)-\log q_{f,\alpha}(r_2)|}{h\ell(\alpha-1)},
+\qquad \kappa_i=-\frac{\log r_i}{h\ell}.
+\end{equation}
+For either shape fix $h,\ell,a$ and $\theta\in\mathcal T$. Let $J_\eta(u)$ be the three-feature signed Jacobian in coordinates $\eta=(\log\kappa,\alpha,\log C)$. There are constants $K_\theta,c_\theta,u_\theta>0$ such that for $0<u<u_\theta$,
+\begin{equation}\label{eq:smallfrequency}
+s_{\min}\{J_\eta(u)\}\le K_\theta\frac{u^\alpha}{\sqrt{1+(\log u)^2}},
+\qquad \operatorname{cond}_2\{J_\eta(u)\}\ge c_\theta(\log u)^2.
+\end{equation}
+The constants can be chosen uniformly over a compact interior parameter set, retaining the pointwise factor $u^\alpha$.
+\end{proposition}
+\begin{proof}
+Lemma~\ref{lem:ratio} gives $d\log q_{f,\alpha}/d\log r>\alpha-1$. Integrating between $r_1,r_2$ proves \eqref{eq:scalarbound}.
+For the second assertion put
+\[
+H(\kappa,\alpha)=\big(m_\alpha(r),a^\alpha m_\alpha(r),m_\alpha(r^2)\big)^\top,
+\qquad Z(u)=Cu^\alpha H.
+\]
+The Jacobian columns are $Cu^\alpha\partial_{\log\kappa}H$, $Cu^\alpha\{(\log u)H+\partial_\alpha H\}$ and $Cu^\alpha H$. Its action on the unit vector $(0,1,-\log u)^\top/\sqrt{1+(\log u)^2}$ is exactly $Cu^\alpha\partial_\alpha H/\sqrt{1+(\log u)^2}$. This bounds its minimum singular value. Meanwhile its second column has norm at least $Cu^\alpha\{|\log u|\norm H-\norm{\partial_\alpha H}\}$. Since $\norm H>0$, comparison proves the condition-number bound for sufficiently small $u$. On a compact set $C$ and the derivatives are bounded and $\norm H$ is bounded away from zero, giving the uniform constants.
+\end{proof}
+The scalar bound holds at a fixed $\alpha$; index uncertainty requires the full inverse. The Jacobian bounds concern the displayed coordinates and do not order estimator variances. They motivate the joint examination of CF separation, feature conditioning and covariance estimation in Section~\ref{sec:newnumerics}.
+
+\subsection{A frequency rule that does not require a known noise law}
+Fix $u_0>0$, $a>1$, $\ell\ge1$, $d\in\{-1,1\}$ and $0<\rho<\tau<1$. At grid $j=0,1,\ldots$ use the three cells in \eqref{eq:cells} with $u_j=2^{-j}u_0$. Let $\widehat c_{n,j}$ be the smallest modulus of their nine aligned empirical CFs and set
+\[
+j_n=\min\{j\ge0:\widehat c_{n,j}\ge\tau\}.
+\]
+Use the exact signed inverse at that grid if it belongs to the fitting set, and otherwise return a fixed reference point while recording a failure.
+
+\begin{theorem}[Noise-law-adaptive strong consistency]\label{thm:adaptive}
+Under the baseline model, let $\Theta\subset\mathcal T$ be compact and $\theta_0\in\operatorname{int}\Theta$. For every iid error distribution, the search terminates on every finite real-valued record in exact arithmetic. Almost surely, $j_n$ is eventually bounded, the inversion eventually succeeds, and the selected estimate converges to $\theta_0$.
+\end{theorem}
+\begin{proof}
+For a finite record, every empirical CF tends to one as $u_j\to0$, proving termination. For the fixed population law, CF continuity provides a finite $J$ with the nine population moduli at grid $J$ strictly larger than $\tau$. Geometric mixing and ergodicity (Lemma~\ref{lem:mix}) give the strong law for each bounded transform, simultaneously on the countable family of grids. Thus grid $J$ passes eventually and $j_n\le J$ eventually. Any $j\le J$ with population minimum $c_j<\tau$ fails eventually. The remaining finite family has $c_j\ge\tau>\rho$; empirical interactions converge to their model values uniformly over this finite family. By the open image \eqref{eq:image}, continuity of each inverse, and interiority of $\theta_0$, every such inverse eventually exists, belongs to $\Theta$, and tends to $\theta_0$. Selection within this family preserves convergence.
+\end{proof}
+
+Population equality $c_j=\tau$ may cause the selected level to oscillate, although the parameter estimate remains consistent. The next corollary gives a sufficient condition for eventual stabilization; Section~\ref{sec:honest} gives a coverage construction that also allows selection without stabilization.
+
+\begin{corollary}[Strict-threshold stabilization]\label{cor:stabilize}
+If a finite $j_*$ has $c_{j_*}>\tau$ and $c_j<\tau$ for every $j<j_*$, then $j_n=j_*$ eventually almost surely. The fixed-grid limits below then apply at $j_*$ under their additional assumptions.
+\end{corollary}
+\begin{proof}
+The strong law eventually preserves the finitely many strict comparisons, so the selected and fixed-grid procedures agree eventually.
+\end{proof}
+The strict population comparisons are additional assumptions; a sample gate alone does not verify them.
+
+\section{Fixed-grid estimation and pointwise asymptotics}\label{sec:stats}
+This section states the conditions needed for consistent estimation and feasible inference. Proofs are collected in Appendix~\ref{app:technical}.
+Let $S=\{(\ell_i,u_i,v_i):1\le i\le p\}$ be a deterministic fixed grid of positive lags, $L=\max_i\ell_i$ and $N_i=n+1-\ell_i$. Define aligned empirical CFs
+\begin{equation}\label{eq:ecf}
+\widehat j_i=\frac1{N_i}\sum_{t=0}^{n-\ell_i}e^{i(u_iY_t+v_iY_{t+\ell_i})},\quad
+\widehat a_i=\frac1{N_i}\sum_{t=0}^{n-\ell_i}e^{iu_iY_t},\quad
+\widehat b_i=\frac1{N_i}\sum_{t=0}^{n-\ell_i}e^{iv_iY_{t+\ell_i}}.
+\end{equation}
+For a fixed $0<\rho<1$, let
+\begin{equation}\label{eq:floor}
+\hD_{i,\rho}=\log\max(|\widehat j_i|,\rho)-\log\max(|\widehat a_i|,\rho)
+-\log\max(|\widehat b_i|,\rho).
+\end{equation}
+Write $j_i,a_i,b_i$ for the population means. Throughout this section assume
+\begin{equation}\label{eq:safe}
+\min_{1\le i\le p}\{|j_i|,|a_i|,|b_i|\}>\rho.
+\end{equation}
+This is a population separation condition, not a consequence of passing a sample CF gate. We use a fixed symmetric positive-definite weight $W$ and a compact fitting set $\Theta\subset\mathcal T$ on which $F=F_S$ is injective. The normalized criterion is
+\begin{equation}\label{eq:criterion}
+Q_n(\theta)=\norm{\hD_{S,\rho}-F(\theta)}_W^2,\qquad
+\norm{x}_W^2=x^\top Wx.
+\end{equation}
+
+\subsection{Dependence and the interaction limit}
+\begin{lemma}[Geometric strong mixing]\label{lem:mix}
+For the stationary baseline model there is a finite constant $K$ with
+$a_Y(k)\le K\phi^k$, $k\ge1$, where $a_Y$ denotes strong mixing coefficients. No moment assumption on $\varepsilon_0$ is needed.
+\end{lemma}
+
+
+\begin{proposition}[Consistency]\label{prop:cons}
+Under the preceding fixed-grid assumptions, if $\theta_0\in\Theta$ and a measurable estimate satisfies
+$Q_n(\widehat\theta_n)\le\inf_\Theta Q_n+e_n$ with $e_n\ge0$ and $e_n\to0$ almost surely, then $\widehat\theta_n\to\theta_0$ almost surely.
+\end{proposition}
+
+
+For each cell let $J_{i,t}=e^{i(u_iY_t+v_iY_{t+\ell_i})}$,
+$A_{i,t}=e^{iu_iY_t}$ and $B_{i,t}=e^{iv_iY_{t+\ell_i}}$. Stack their real and imaginary parts into $V_t\in\R^{6p}$. Define the bounded, centered influence vector
+\begin{equation}\label{eq:psi}
+\Psi_{i,t}=\Re\{J_{i,t}/j_i-A_{i,t}/a_i-B_{i,t}/b_i\}+1.
+\end{equation}
+
+\begin{theorem}[Joint interaction CLT]\label{thm:clt}
+Under the baseline model and \eqref{eq:safe}, with $M=n+1-L$,
+\begin{equation}\label{eq:clt}
+\sqrt n\{\hD_{S,\rho}-F(\theta_0)\}
+=n^{-1/2}\sum_{t=0}^{M-1}\Psi_t+o_p(1)
+\ \Rightarrow\ N_p(0,\Gamma),\quad
+\Gamma=\sum_{k\in\mathbb Z}\Cov(\Psi_0,\Psi_k).
+\end{equation}
+The covariance series is entrywise absolutely convergent; $\Gamma$ may be singular.
+\end{theorem}
+
+
+\subsection{Parameter expansion and numerical minimization}
+\begin{theorem}[Controlled minimum-distance expansion]\label{thm:md}
+Assume Theorem~\ref{thm:clt}, $\theta_0\in\operatorname{int}\Theta$, and $J_0=\partial_\theta F(\theta_0)$ has column rank three. If a measurable estimate obeys
+$Q_n(\widehat\theta_n)\le\inf_\Theta Q_n+e_n$ with $e_n\ge0$ and $e_n=o_p(n^{-1})$, then
+\begin{equation}\label{eq:md}
+\sqrt n(\widehat\theta_n-\theta_0)
+=A_0\sqrt n\{\hD_{S,\rho}-F(\theta_0)\}+o_p(1)
+\Rightarrow N_3(0,V),
+\end{equation}
+where $H_0=J_0^\top WJ_0$, $A_0=H_0^{-1}J_0^\top W$ and $V=A_0\Gamma A_0^\top$. Only $H_0$, not $\Gamma$, must be invertible here.
+\end{theorem}
+
+
+\paragraph{Three-cell inversion.}
+For exactly $S_d$, apply \eqref{eq:inverse} when the empirical signed vector belongs to \eqref{eq:image} and its inverse belongs to $\Theta$. Otherwise mark the inversion as failed. For an interior truth and \eqref{eq:safe}, the success probability tends to one by CF consistency and continuity of the inverse. A successful exact inverse has criterion zero, and hence is a global minimizer. To define a mathematical estimator on all records, any fixed reference point in $\Theta$ may be used on failures; the global gap then satisfies $ne_n\to0$ in probability, because it is zero on an event of probability tending to one. This fallback is not a successful reported fit.
+
+On a neighborhood of an interior truth, a scalar-root error $\epsilon_n$ produces parameter error $O(\epsilon_n)$ and objective gap $O(\epsilon_n^2)$, by bounded derivatives of the inverse and feature map. Thus $\epsilon_n=o(n^{-1/2})$ suffices for the expansion in exact arithmetic; $O(n^{-3})$ is one stronger choice. A fixed floating-point tolerance is not an asymptotic error certificate. Multistart solver termination for larger grids likewise does not prove the required global criterion gap.
+
+\paragraph{Boundary truth.}
+For a rectangular $\Theta$ with $\theta_0$ on its boundary, the same controlled-gap minimization has the limit
+\begin{equation}\label{eq:cone}
+\sqrt n(\widehat\theta_n-\theta_0)\Rightarrow
+\argmin_{t\in T_\Theta(\theta_0)}(t-A_0Z)^\top H_0(t-A_0Z),\quad Z\sim N_p(0,\Gamma).
+\end{equation}
+Indeed consistency and comparison with the truth give the same root-$n$ bound; on each bounded neighborhood the scaled feasible box eventually equals its tangent cone. The uniform quadratic expansion and the projection variational inequality then force the approximate minimizer to the unique $H_0$-metric projection. This is generally not a normal limit or coordinatewise clipping. At a single lower face $j$, the projection of $x$ is
+$x+H_0^{-1}e_j(-x_j)_+/(e_j^\top H_0^{-1}e_j)$.
+The inverse-with-fixed-fallback procedure need not satisfy \eqref{eq:cone}: if the unconstrained local inverse has positive variance in the active coordinate, it leaves that face with asymptotic probability $1/2$, and a distant reference fallback can destroy consistency.
+
+\subsection{A feasible positive-semidefinite covariance estimator}
+Use the Bartlett HAC construction \cite{nw_hac}. Replace $j_i,a_i,b_i$ in \eqref{eq:psi} by their lag-specific empirical values to obtain $\widehat\Psi_t$, $0\le t<M$. Let $z_t=\widehat\Psi_t-\overline{\widehat\Psi}$ and define
+\begin{equation}\label{eq:hac}
+\widehat\gamma_k=M^{-1}\sum_{t=0}^{M-1-k}z_tz_{t+k}^\top,\qquad
+\hG_B=\widehat\gamma_0+\sum_{k=1}^B\left(1-\frac{k}{B+1}\right)
+(\widehat\gamma_k+\widehat\gamma_k^\top).
+\end{equation}
+Use these definitions on the event that all denominators exceed $\rho$, and assign a finite placeholder otherwise. The latter event vanishes asymptotically. The common denominator $M$ is part of the construction.
+
+\begin{theorem}[Feasible Bartlett consistency]\label{thm:hac}
+Under Theorem~\ref{thm:clt}, if deterministic integers $B=B_n$ satisfy
+$B\to\infty$, $B<M$ eventually and $B^3/M\to0$, then
+$\hG_B\to\Gamma$ in probability. On its defining event it is positive semidefinite in exact arithmetic.
+\end{theorem}
+
+
+The bandwidth condition permits $B\asymp M^\xi$ for $0<\xi<1/3$. The common denominator in \eqref{eq:hac} is essential for positive semidefiniteness: for centered values $(1,-2,2,-1)$ and $B=1$, the estimate is $1/2$, whereas replacing the lag-$k$ denominator by $M-k$ gives $-1/6$.
+
+\begin{corollary}[Regular contrasts]\label{cor:wald}
+Under Theorems~\ref{thm:md} and \ref{thm:hac}, set
+$\widehat J=\partial F(\widehat\theta_n)$,
+$\widehat A=(\widehat J^\top W\widehat J)^{-1}\widehat J^\top W$ and
+$\widehat V=\widehat A\hG_B\widehat A^\top$ on the full-rank event. Then $\widehat V\to V$ in probability. For any fixed $q$ with $q^\top Vq>0$,
+\[
+\frac{\sqrt n\,q^\top(\widehat\theta_n-\theta_0)}{\sqrt{q^\top\widehat Vq}}
+\Rightarrow N(0,1).
+\]
+\end{corollary}
+
+
+For positive drift and scale, log-coordinate intervals can be transformed back. In coordinates $\eta=(\log\kappa,\alpha,\log C)$, $J_\eta=J_\theta\diag(\kappa,1,C)$.
+For a three-cell feature region,
+\begin{equation}\label{eq:region}
+\mathcal C_n=\{\theta\in\Theta:
+n(\hD-F(\theta))^\top\hG_B^{-1}(\hD-F(\theta))\le\chi^2_{3,1-\zeta}\},
+\end{equation}
+the chi-square reference requires $\Gamma\succ0$ and a deterministic, population-separated grid. Point inversion need not succeed for the feature region to be evaluated. Positive sample eigenvalues and solver termination do not establish the population covariance condition or the required global criterion gap; these conditions are not uniform over unrestricted error laws.
+
+\section{Stability and the limits of uniform inference}\label{sec:limits}
+\begin{proposition}[Amplitude-free replacement bound]\label{prop:robust}
+Replace at most $m$ observations by arbitrary real values. On a fixed cell of positive lag $\ell$, the floored statistic obeys
+\begin{equation}\label{eq:replace}
+|\hD'_{\ell,\rho}-\hD_{\ell,\rho}|\le\frac{8m}{\rho(n+1-\ell)}.
+\end{equation}
+The same inequality holds without floors if the three empirical moduli exceed $\rho$ before and after replacement.
+\end{proposition}
+\begin{proof}
+Each replacement affects at most one summand in each aligned marginal and at most two joint summands. Complex exponentials change by at most two, giving ECF differences bounded by $2m/N_\ell$, $2m/N_\ell$ and $4m/N_\ell$. Since $x\mapsto\log\max(x,\rho)$ is $1/\rho$-Lipschitz and $||z|-|z'||\le|z-z'|$, summing proves \eqref{eq:replace}. The unfloored case uses the same log-Lipschitz bound between separated moduli.
+\end{proof}
+
+For a fixed identified grid, let $b_{n,m}=(8m/\rho)(\sum_iN_i^{-2})^{1/2}$ and
+$a_{n,m}=\norm{\hD-F(\theta_0)}_W+\sqrt{\lambda_{\max}(W)}b_{n,m}$.
+If the contaminated fit has global criterion gap at most $e_n'$, Theorem~\ref{thm:three} and comparison with the truth give
+\begin{equation}\label{eq:parameterrobust}
+\norm{\widehat\theta_n'-\theta_0}
+\le\frac{a_{n,m}+\sqrt{a_{n,m}^2+e_n'}}{\sqrt{\lambda_{\min}(W)}c_\Theta}.
+\end{equation}
+Indeed its fitted feature is within the displayed numerator of $F(\theta_0)$ in $W$-norm by the triangle inequality and objective comparison; \eqref{eq:inversebound} then applies. Thus $m=o(n)$ preserves consistency if the original statistic is consistent and the contaminated global gap vanishes. The interaction perturbation is negligible at root-$n$ scale when $m=o(\sqrt n)$. This is not a fixed-fraction breakdown guarantee and does not cover changes to the retained grid.
+
+\paragraph{CF zeros and floors.}
+Uniform errors on $[-4\pi,4\pi]$ have CF $\sin(4\pi u)/(4\pi u)$, zero at every original first-coordinate frequency $.25,.5,.75$. The corresponding log interactions are undefined. More generally, sufficiently large Gaussian recording noise puts all three population moduli at a positive-direction cell below a fixed $\rho$. Then the limiting floored interaction is $-\log\rho>0$, while its unfloored model value is negative. Numerical flooring therefore does not remove the need for \eqref{eq:safe}.
+
+\begin{theorem}[Finite-record information obstruction]\label{thm:impossible}
+Fix a record length $m$ and a compact positive-volume box $\Theta\subset\mathcal T$, with signal location zero. Let $Y=X_\theta+\tau Z$, where $Z\sim N_m(0,I)$ is independent recording noise. Suppose a jointly measurable confidence region $\mathcal C(Y)$ has coverage at least $1-\zeta$ for every $\theta\in\Theta$ and every $\tau>0$. In coordinates $\eta=(\log\kappa,\alpha,\log C)$, for each $\theta_r\in\Theta$,
+\begin{equation}\label{eq:impossibility}
+\liminf_{\tau\to\infty}\E_{\theta_r,\tau}
+\frac{\Vol_\eta(\mathcal C(Y)\cap\Theta)}{\Vol_\eta(\Theta)}\ge1-\zeta.
+\end{equation}
+\end{theorem}
+\begin{proof}
+Couple $X_\theta$ and $X_{\theta_r}$ independently. The Gaussian shift relative entropy is $\norm{x-x'}^2/(2\tau^2)$; Pinsker's inequality therefore gives
+\[
+\norm{N_m(x,\tau^2I)-N_m(x',\tau^2I)}_{\rm TV}
+\le\min\{1,\norm{x-x'}/(2\tau)\}.
+\]
+Convexity of total variation under mixtures yields
+\[
+\norm{\mathcal L_{\theta,\tau}(Y)-\mathcal L_{\theta_r,\tau}(Y)}_{\rm TV}
+\le\frac{\E\norm{X_\theta-X_{\theta_r}}}{2\tau}\le\frac{A_m}{\tau},
+\]
+uniformly over $\Theta$. To check finiteness, stationarity bounds the vector first moment by the sum of $m$ marginal first moments. In the integral in Lemma~\ref{lem:mix}, for $t\le1$ use $1-e^{-Ct^\alpha}\le C_{\max}t^{\alpha_{\min}}$, where $\alpha_{\min}>1$; for $t\ge1$ use one. This bounds the moments uniformly on $\Theta$.
+
+Coverage at $\theta$ now implies
+$\Pp_{\theta_r,\tau}\{\theta\in\mathcal C(Y)\}\ge1-\zeta-A_m/\tau$.
+Integrate this inequality with respect to $\eta$-volume on $\Theta$. Joint measurability and Tonelli identify the left side with expected intersection volume. Divide by the box volume and let $\tau\to\infty$ to obtain \eqref{eq:impossibility}.
+\end{proof}
+
+This is a model-specific form of the established weak-identification obstruction \cite{dufour}. The record length is fixed in this theorem. It does not contradict pointwise consistency as $n\to\infty$ for a fixed noise law. It rules out simultaneously uniform finite-sample coverage over unbounded Gaussian noise and uniformly small expected volume. Useful quantitative guarantees require restrictions on noise severity and dependence or CF separation; giving the whole box is not an informative repair.
+
+\subsection{A conservative finite-record coverage guarantee}\label{sec:honest}
+There is a constructive distinction between an honest region and a useful small region. The following explicit bound needs no error moments, CF separation, or nonsingular long-run covariance. It is for the baseline iid-noise model only.
+
+For a candidate $\theta=(\kappa,\alpha,C)$ let $\phi=e^{-\kappa h}$ and write $\Gamma_{\!E}$ for Euler's gamma function. Define
+\begin{align}
+A_\alpha&=\frac{\Gamma_{\!E}(2/\alpha)}{\pi\alpha},\qquad
+B_\alpha=\frac{2\alpha+1}{\pi},\nonumber\\
+K(\theta)&=4\sqrt{A_\alpha B_\alpha}\,
+\frac{2\Gamma_{\!E}(1-1/\alpha)}{\pi(1-\phi^\alpha)^{1/\alpha}},\label{eq:explicitK}\\
+v_\theta(N,s)&=\min\left\{1,\frac{1+2s+2\sum_{k\ge1}\min(1,8K(\theta)\phi^k)}{N}\right\}.
+\label{eq:varbound}
+\end{align}
+The sum is explicit: for $k_0=\max\{0,\lfloor\log(8K)/(\kappa h)\rfloor\}$ it equals
+$k_0+8K\phi^{k_0+1}/(1-\phi)$. For $p$ fixed cells and total error budget $\zeta$, put
+\[
+\delta_{i,J}(\theta)=\min\{2,\sqrt{3p\,v_\theta(N_i,\ell_i)/\zeta}\},\qquad
+\delta_{i,A}(\theta)=\delta_{i,B}(\theta)=\min\{2,\sqrt{3p\,v_\theta(N_i,0)/\zeta}\}.
+\]
+Define $\mathcal H_n(\zeta;S)$ to be all $\theta\in\Theta$ satisfying, for every cell,
+\begin{equation}\label{eq:honest}
+|e^{-D_i(\theta)}\widehat j_i-\widehat a_i\widehat b_i|
+\le e^{-D_i(\theta)}\delta_{i,J}(\theta)+\delta_{i,A}(\theta)+\delta_{i,B}(\theta).
+\end{equation}
+
+\begin{theorem}[Honest coverage, including selected grids]\label{thm:honest}
+For every $n$ exceeding the largest lag, every $\theta_0\in\Theta$, and every independent iid recording-error law,
+$\Pp_{\theta_0}\{\theta_0\in\mathcal H_n(\zeta;S)\}\ge1-\zeta$.
+For the countable grids of Theorem~\ref{thm:adaptive}, assign $\zeta_j=\zeta 2^{-j-1}$. Then
+$\mathcal H_n(\zeta_{j_n};S_{j_n})$ has the same guarantee, including data-dependent selection. For each fixed noise law and interior truth, these selected regions are eventually contained in every neighborhood of $\theta_0$, almost surely.
+\end{theorem}
+The proof, including the explicit constants and simultaneous selection argument, is given in Appendix~\ref{proof:honest}.
+
+
+Taking $\zeta=.05$ gives at least 95\% coverage in finite samples. The constants and the union bound are intentionally conservative; the region can equal almost the whole fitting box. Theorem~\ref{thm:impossible} explains why no uniformly small repair is available for unbounded unknown noise. A finite numerical mesh represents only a diagnostic volume approximation, not the entire confidence set: discarding off-mesh candidates would destroy the stated guarantee.
+
+\section{Numerical evidence and independent diagnostics}\label{sec:numerics}
+\subsection{Frozen design and counting units}
+The exact stationary AR(1) recursion \eqref{eq:skeleton}, with Chambers--Mallows--Stuck stable draws \cite{cms}, avoids Euler and burn-in error. The central model is $(\kappa,\alpha,C,h)=(1,1.8,.8,.05)$ with 500 independent latent paths and nested horizons $n=2{,}000$, $8{,}000$, $32{,}000$, $128{,}000$. Paired errors are zero; Gaussian SD .4; Cauchy scale .25; the same Cauchy error shifted by 2; uniform on $[-4\pi,4\pi]$; and Gaussian SD 2. Error seeds are separate from latent seeds. Shifted Cauchy deliberately reuses the unshifted draw.
+
+Five additional parameter cases each use 200 independent latent paths, the first three horizons, and clean/Cauchy errors: $\alpha=1.15$, $\alpha=1.95$, $\kappa=.25$, $\kappa=4$, or $C=3$, changing only the named central parameter. There are 1,500 independent latent paths, 18,000 observation prefixes, and 36,000 fixed/adaptive scenario rows. These rows are paired within paths and are not 36,000 independent replications.
+
+The opposite-direction grid uses $(\ell,u_0,a)=(5,.5,2)$, floor/gate $\rho=.05$, selection threshold $\tau=.2$, and fitting box $[.05,5]\times[1.05,1.99]\times[.01,10]$. The implemented search has a numerical cap of 30 levels; the largest observed selected level was 3, so no cap was reached. Point inversion uses a scalar Brent root with absolute/relative tolerances $2\times10^{-14}$ and records out-of-model or out-of-box failures without clipping. These tolerances are computational choices, not asymptotic certificates.
+
+The Bartlett span is $B=\min(M-1,\max\{11,\lceil4M^{1/4}\rceil\})$. A fixed-$K$ batch comparator uses $K=20$ and the $F$ critical value proved in Appendix~\ref{app:calibration}; no tuning follows outcomes. HAC and batch regions can be evaluated even when point inversion fails. An unsafe CF or failed Cholesky withholds that region and counts as noncoverage in $K/N$. The honest construction uses $.05$ on the fixed grid and $.05\,2^{-j-1}$ after selection. Parameter-space volumes are diagnostic Sobol fractions in $(\log\kappa,\alpha,\log C)$, with 1,024 points on only the first eight paths per scenario, not exact volumes or confidence-set discretizations.
+
+\subsection{Identification and coverage findings}
+\begin{table}[htbp]\centering\small
+\caption{Central model: inversion success and conditional RMSE. Clean/Cauchy use the fixed grid; the two severe-noise cases use selection. RMSE excludes failed inversions; all failures remain in the success denominator.}\label{tab:estimate}
+\begin{tabular}{lrrrrrr}\toprule
+Noise & $n$ & median $j$ & inversions & RMSE $\kappa$ & RMSE $\alpha$ & RMSE $C$\\ \midrule
+Clean & 2,000 & 0 & 446/500 & 0.204 & 0.139 & 0.131 \\
+ & 8,000 & 0 & 499/500 & 0.096 & 0.073 & 0.068 \\
+ & 32,000 & 0 & 500/500 & 0.047 & 0.038 & 0.033 \\
+ & 128,000 & 0 & 500/500 & 0.024 & 0.019 & 0.017 \\
+\addlinespace[0.6ex]
+Cauchy & 2,000 & 0 & 431/500 & 0.238 & 0.147 & 0.133 \\
+ & 8,000 & 0 & 498/500 & 0.112 & 0.079 & 0.072 \\
+ & 32,000 & 0 & 500/500 & 0.055 & 0.039 & 0.035 \\
+ & 128,000 & 0 & 500/500 & 0.028 & 0.021 & 0.017 \\
+\addlinespace[0.6ex]
+Gaussian 2 & 2,000 & 1 & 360/500 & 0.465 & 0.196 & 0.218 \\
+ & 8,000 & 1 & 476/500 & 0.232 & 0.108 & 0.122 \\
+ & 32,000 & 1 & 500/500 & 0.110 & 0.062 & 0.063 \\
+ & 128,000 & 1 & 500/500 & 0.054 & 0.029 & 0.030 \\
+\addlinespace[0.6ex]
+Uniform zeros & 2,000 & 3 & 67/500 & 1.406 & 0.207 & 1.503 \\
+ & 8,000 & 3 & 151/500 & 1.385 & 0.232 & 0.748 \\
+ & 32,000 & 3 & 327/500 & 0.836 & 0.202 & 0.495 \\
+ & 128,000 & 3 & 470/500 & 0.407 & 0.111 & 0.299 \\
+\bottomrule\end{tabular}
+\end{table}
+
+The central clean and Cauchy cases have sharply declining conditional RMSE and eventual inversion success on every simulated path. Adding a constant to the entire observed record leaves the empirical log-modulus interactions unchanged; the shifted-Cauchy paired output agrees numerically. This checks location cancellation, not resistance to serially correlated errors.
+
+The fixed grid fails under uniform CF zeros at every tested horizon. Under Gaussian SD 2 it also has zero successful point inversions; its high-frequency population joint CF falls below the gate. Selection repairs admissibility, but information can remain weak: uniform-noise inversion success rises from $67/500$ at $n=2{,}000$ to $470/500$ at $128{,}000$, still below the mild-noise cases. Passing an empirical gate is not a guarantee of good conditioning or accurate inference.
+
+\begin{table}[htbp]\centering\small
+\caption{Coverage at nominal 95\%. All displayed regions were issued on all 500 attempts. The last two noise cases are selected-grid diagnostics, outside the fixed-grid calibration theorem. Wilson intervals quantify marginal Monte Carlo uncertainty, not simultaneous uncertainty across rows.}\label{tab:coverage}
+\begin{tabular}{lrrrl}\toprule
+Noise & $n$ & HAC $K/N$ & Batch $K/N$ & batch Wilson 95\% interval\\ \midrule
+Clean & 2,000 & 378/500 & 399/500 & [0.761, 0.831] \\
+ & 8,000 & 435/500 & 455/500 & [0.882, 0.932] \\
+ & 32,000 & 454/500 & 473/500 & [0.923, 0.963] \\
+ & 128,000 & 470/500 & 472/500 & [0.920, 0.961] \\
+\addlinespace[0.6ex]
+Cauchy & 2,000 & 389/500 & 413/500 & [0.790, 0.857] \\
+ & 8,000 & 438/500 & 463/500 & [0.900, 0.946] \\
+ & 32,000 & 459/500 & 470/500 & [0.916, 0.958] \\
+ & 128,000 & 473/500 & 472/500 & [0.920, 0.961] \\
+\addlinespace[0.6ex]
+Gaussian 2 & 2,000 & 328/500 & 361/500 & [0.681, 0.759] \\
+ & 8,000 & 388/500 & 410/500 & [0.784, 0.851] \\
+ & 32,000 & 442/500 & 469/500 & [0.913, 0.956] \\
+ & 128,000 & 461/500 & 476/500 & [0.930, 0.968] \\
+\addlinespace[0.6ex]
+Uniform zeros & 2,000 & 386/500 & 421/500 & [0.807, 0.871] \\
+ & 8,000 & 329/500 & 368/500 & [0.696, 0.773] \\
+ & 32,000 & 340/500 & 361/500 & [0.681, 0.759] \\
+ & 128,000 & 415/500 & 435/500 & [0.838, 0.897] \\
+\bottomrule\end{tabular}
+\end{table}
+
+At $n=2{,}000$, clean HAC coverage is $378/500$ and the batch comparator reaches only $399/500$. At $n=32{,}000$, clean batch coverage is $473/500$; at $128{,}000$ it is $472/500$. Cauchy batch coverage is $470/500$ and $472/500$ at those two horizons. These estimates and their Monte Carlo intervals are compatible with improvement toward the fixed-grid asymptotic reference; they are not a finite-sample theorem or a universal 95\% repair. Uniform-noise selected-grid batch coverage remains only $435/500$ even at the largest horizon.
+
+The honest region contains truth on every simulated attempt. Every recorded Sobol volume fraction for it is 1.000. This demonstrates the conservatism of the present bound on the tested scales; 100\% observed coverage is not evidence of a useful calibrated procedure, and a sampled volume of one is not proof that the mathematical set equals the whole box.
+
+Additional parameter stress checks appear in Table~\ref{tab:scope} in Appendix~\ref{app:additional}.
+
+In particular, slow mean reversion gives clean batch coverage of $174/200$ at $n=32{,}000$ despite inversion success on all paths. Near $\alpha=2$, out-of-box estimates also occur. The accompanying success counts and all-attempt loss therefore remain necessary when interpreting conditional RMSE.
+
+\subsection{Independent frequency and covariance diagnostics}\label{sec:newnumerics}
+A prespecified diagnostic on 200 fresh central-model latent paths uses master seed 202610150915, $n=8{,}000$ and $32{,}000$, and clean, Cauchy, Gaussian SD 2 and uniform errors. Four fixed frequencies $u\in\{.5,.25,.125,.0625\}$ are paired with the unchanged dyadic rule. The fitting box, CF gate, lag, batch count and tolerances are common to all rules. The design was fixed before execution and was not retuned on these paths. Paired Monte Carlo standard errors are reported because outputs share latent paths and noise draws.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Independent frequency diagnostics at $n=32{,}000$. All rules use the same 200 latent paths and paired noise. RMSE conditions on inversion success; $L_\alpha$ is squared index error on success and loss one on failure. Batch counts use all attempts. Selected rows remain diagnostics outside the general fixed-grid theorem.}\label{tab:frequency}
+\begin{tabular}{llrrrr}\toprule
+Noise & Rule & Successes & RMSE $\kappa$ & $L_\alpha$ & Batch $K/N$ \\ \midrule
+Clean & $u=0.5$ & 200/200 & 0.043 & 0.001 & 185/200 \\
+ & $u=0.25$ & 200/200 & 0.040 & 0.002 & 187/200 \\
+ & $u=0.125$ & 200/200 & 0.043 & 0.008 & 158/200 \\
+ & $u=0.0625$ & 195/200 & 0.047 & 0.047 & 114/200 \\
+ & Selected & 200/200 & 0.043 & 0.001 & 185/200 \\
+\addlinespace[0.6ex]
+Cauchy & $u=0.5$ & 200/200 & 0.050 & 0.002 & 184/200 \\
+ & $u=0.25$ & 200/200 & 0.058 & 0.003 & 183/200 \\
+ & $u=0.125$ & 199/200 & 0.075 & 0.013 & 164/200 \\
+ & $u=0.0625$ & 187/200 & 0.117 & 0.085 & 123/200 \\
+ & Selected & 200/200 & 0.050 & 0.002 & 184/200 \\
+\addlinespace[0.6ex]
+Gaussian SD 2 & $u=0.5$ & 0/200 & -- & 1.000 & 0/200 \\
+ & $u=0.25$ & 200/200 & 0.103 & 0.003 & 184/200 \\
+ & $u=0.125$ & 200/200 & 0.090 & 0.008 & 163/200 \\
+ & $u=0.0625$ & 196/200 & 0.084 & 0.043 & 120/200 \\
+ & Selected & 200/200 & 0.103 & 0.003 & 184/200 \\
+\addlinespace[0.6ex]
+Uniform & $u=0.5$ & 0/200 & -- & 1.000 & 0/200 \\
+ & $u=0.25$ & 0/200 & -- & 1.000 & 0/200 \\
+ & $u=0.125$ & 0/200 & -- & 1.000 & 0/200 \\
+ & $u=0.0625$ & 147/200 & 0.851 & 0.292 & 157/200 \\
+ & Selected & 147/200 & 0.851 & 0.292 & 157/200 \\
+\bottomrule\end{tabular}
+\end{table}
+
+Smaller frequencies are not uniformly better. For clean data at $n=32{,}000$, the batch counts fall from $185/200$ at $u=.5$ to $114/200$ at $u=.0625$, while conditional drift RMSE alone changes much less. The paired difference in all-attempt coverage is -0.355 with Monte Carlo standard error 0.037. At these two frequencies the median estimated batch covariance eigenvalue ratios are respectively $8.74\times10^{-4}$ and $1.13\times10^{-4}$. These sample diagnostics indicate weak estimated covariance directions; they do not establish population singularity or isolate the causes of undercoverage.
+
+Severe Gaussian error makes $u=.5$ unusable, whereas the selected rule and $u=.25$ coincide in this scenario. For uniform error, several fixed cells are population CF zeros; at $n=32{,}000$ the selected rule coincides with $u=.0625$, with only $147/200$ inversions and $157/200$ batch inclusions. Together, these comparisons distinguish unavailable log features from weak estimation after CF separation is restored.
+
+A scalar higher-lag signed-power comparator uses $p=.1$ and $M_{10}/M_5$ only for clean and finite-moment Gaussian errors. The same anchor indices are used for both moments. It estimates drift alone and is not a competing joint estimator. At $n=32{,}000$ its drift RMSE is 0.076 for clean data and 0.148 for Gaussian SD 2, with success on all 200 paths in each case. It is not applied to Cauchy error, whose required moments do not exist. This scalar baseline complements the joint-parameter comparison; a broader efficiency comparison with published OU estimators remains open.
+
+\subsection{Independent diagnostics for the Gaussian extension}
+A further 500 latent paths, 100 per $\alpha\in\{1.5,1.8,1.9,1.95,1.98\}$, use $(\kappa,C,h)=(1,.8,.05)$, $n=32{,}000$, $u=.25$ and independent Cauchy error of scale .1. Correlated Gaussian noise is $G_t=.4\xi_t+.4\xi_{t-5}+.2\xi_{t-10}$ or twice that same draw, so $(q_5,q_{10})=(.24,.08)$ or $(.96,.32)$. The two noise scales are paired within each path. Signal coordinates use the original fitting box; covariance coordinates are unrestricted. The five-feature inverse uses no baseline iid-noise confidence formula.
+
+\begin{table}[htbp]
+\centering\small
+\caption{Independent five-feature diagnostics at $n=32{,}000$. MA and $2$MA give inversion success over 100 attempts each; errors shown are conditional on MA success. Jacobian coordinates are $(\log\kappa,\alpha,\log C,q_5,q_{10})$. Covariance-coordinate scaling affects numerical condition numbers.}\label{tab:five}
+\begin{tabular}{rrrrrrr}\toprule
+$\alpha$ & $s_{\min}$ & $\operatorname{cond}_2$ & MA & $2$MA & RMSE $C$ & RMSE $q_5$ \\ \midrule
+1.50 & $4.77\times10^{-3}$ & $3.72\times10^{2}$ & 100/100 & 99/100 & 0.886 & 1.350 \\
+1.80 & $7.67\times10^{-4}$ & $2.25\times10^{3}$ & 69/100 & 67/100 & 1.330 & 2.048 \\
+1.90 & $1.87\times10^{-4}$ & $9.18\times10^{3}$ & 57/100 & 43/100 & 0.666 & 1.106 \\
+1.95 & $4.58\times10^{-5}$ & $3.73\times10^{4}$ & 25/100 & 21/100 & 0.981 & 1.484 \\
+1.98 & $7.23\times10^{-6}$ & $2.36\times10^{5}$ & 14/100 & 10/100 & 0.899 & 1.225 \\
+\bottomrule\end{tabular}
+\end{table}
+
+The theoretical five-feature inverse is a poor practical estimator near $\alpha=2$. At $\alpha=1.98$ only $14/100$ MA and $10/100$ doubled-MA inversions succeed. Conditional scale and covariance errors are already large at $\alpha=1.5$, despite $100/100$ MA success. Thus feature-count minimality is not an efficiency recommendation. These two Gaussian MA scales examine the population extension under explicit temporal assumptions. All 700 new latent paths are independent of the archived 1,500; the 9,800 recorded method/scenario outputs are paired measurements, not 9,800 independent replications.
+
+\section{Discussion}\label{sec:discussion}
+The three-feature inverse isolates the information needed to identify stable OU dynamics under unknown iid recording error. Its strict doubled-lag ratio argument supplies global uniqueness, while the sensitivity bounds identify regimes in which a unique inverse can still be numerically weak. The independent diagnostics reinforce this distinction: restoring CF separation need not restore accurate estimation or confidence calibration. The correlated-Gaussian extension exhibits a further loss of stability near the Gaussian endpoint.
+
+Three research questions remain. A useful frequency-design rule should balance feature conditioning with covariance estimation and justify inference after selection. The correlated-Gaussian extension needs a stable estimation procedure beyond its minimum-feature inverse. Efficiency and rate comparisons with broader ECF estimators would determine the cost of using a small certificate. The numerical findings cover the stated simulation designs; a real-data study would additionally require a defensible model for recording error.
+
+\section*{Declarations}
+\paragraph{Funding.}
+This research received no specific grant from any funding agency in the public, commercial, or not-for-profit sectors.
+
+\paragraph{Competing interests.}
+The author declares no competing interests.
+
+\paragraph{Data and code availability.}
+The code and simulation data are available in release v0.15 of the public repository, \url{https://github.com/vincent-zhang0116/stable-ou-identification}. The supplementary research package contains the simulation source, frozen configurations, per-path feature and decision records, selected complete raw paths, generator inputs, checksums and reproduction commands. It includes the original 1,500-path experiment and the independent 700-path diagnostic study. A full rerun of the original study reproduces all 36,000 point-status and coverage decisions and the 108 summary scenarios within the documented numerical tolerance. The supplement distinguishes numerical agreement from bytewise identity and records the execution environments.
+
+\paragraph{AI-assisted preparation.}
+An AI assistant supported manuscript preparation, code development, and mathematical and numerical checks.
+
+% Funding and competing-interest statements were confirmed by the author.
+% REMAINING SUBMISSION DETAILS:
+% Public repository: GitHub release v0.15; no DOI has been assigned.
+% Target journal: apply its template, anonymization policy, and disclosure requirements.
+
+\appendix
+\numberwithin{equation}{section}
+\section{Direct comparisons with established constructions}\label{app:comparison}
+\paragraph{Stable AR(1) and normalized codifference.}
+For $U_j=X_j-\mu$, the innovation exponent in the AR(1) skeleton is
+$\gamma=C(1-\phi^\alpha)$. The stable AR(1) diagonal formula in \cite{nw} becomes
+\[
+\frac{\gamma u^\alpha}{1-\phi^\alpha}\{1+\phi^{\alpha\ell}-(1-\phi^\ell)^\alpha\}
+=Cu^\alpha g_\alpha(\phi^\ell).
+\]
+Independent observation errors cancel at positive lags. If $H_Y(u)=-\log|\chi_Y(u)|$, a normalized real codifference is
+$I_{Y,\ell}(u)=D_\ell(u,-u)/(2H_Y(u))$; its denominator is noise-dependent. The ratio $I_{Y,2\ell}/I_{Y,\ell}$ nevertheless equals $q_{g,\alpha}(r_\ell)$ because that denominator cancels. Thus the ratio construction is algebraically related to established normalized codifferences \cite{rd}; its whole-domain strict monotonicity is the separate argument in Lemma~\ref{lem:ratio}.
+
+Monotonicity of $m$ alone does not establish monotonicity of $m(r^2)/m(r)$: $m(r)=2r\exp\{16(r-1)\}$ is strictly increasing, but the log derivative of its ratio is $1/r+16(2r-1)$, equal to $-4$ at $r=1/4$. Nor can the fixed-lag ratio simply be substituted for $r$: for $\alpha=3/2$, $r=1/2$,
+$q_{g,3/2}(1/2)=(9-3\sqrt3)/8\simeq.475481\ne.5$.
+
+\paragraph{Marginal and innovation-only matching.}
+Writing $H_X(u)=Cu^\alpha$ and $E_\varepsilon(u)=-\log|\chi_\varepsilon(u)|$, the observed marginal and increment exponents satisfy
+\[
+H_Y(u)=H_X(u)+E_\varepsilon(u),\qquad
+-\log|\E e^{iu(Y_\ell-Y_0)}|
+=H_X(u)\{(1-r)^\alpha+1-r^\alpha\}+2E_\varepsilon(u).
+\]
+Hence clean marginal slopes and increment-to-marginal ratios cannot simply be transferred to noisy observations. These are different observation assumptions from those in \cite{tl,chl}.
+Even without recording errors, innovation-only matching with free drift and scale has a possible alias: at the true slope $\phi_0$ and coefficient $C_0$,
+\[
+\E e^{it(U_{j+1}-bU_j)}=\exp\{-A(b)|t|^\alpha\},\quad
+A(b)=C_0\{|\phi_0-b|^\alpha+1-\phi_0^\alpha\}.
+\]
+Every $b\in(0,1)$ can match this residual exponent with $C_b=A(b)/(1-b^\alpha)$. This does not refute estimators with additional identification or preliminary-drift assumptions; it specifies why the dependence interaction uses different information.
+
+\paragraph{Unknown-noise cross-product contrasts.}
+For centered latent model CFs, the established cross-product principle \cite{gl} gives
+\[
+R_\ell(\theta)=\chi_{Y,\ell}(u,v)\chi_\theta(u)\chi_\theta(v)
+-\chi_{\theta,\ell}(u,v)\chi_Y(u)\chi_Y(v).
+\]
+Under the model, it factors as
+$\chi_Y(u)\chi_Y(v)\chi_\theta(u)\chi_\theta(v)
+[e^{D_\ell(\theta_0)}-e^{D_\ell(\theta)}]$.
+On a nonzero-CF domain its population zeros are therefore precisely equality of interactions. At a recording-error CF zero the residual instead vanishes for every candidate; avoiding logarithms does not restore the lost information. The light-tail classes used in \cite{gl} require finite Laplace transforms in every real direction, whereas the non-Gaussian stable marginal has infinite second moment. Their theorems cannot be transferred solely because our parameter vector is finite-dimensional.
+
+Unknown-noise deconvolution also has a multivariate formulation \cite{gl22}. The checked author text assumes finite Laplace growth of order below two for identification; a non-Gaussian stable marginal is outside that class. The repeated-measurements formulation \cite{repeat} observes independently corrupted copies of one latent draw, rather than two successive OU states, and likewise imposes Laplace-growth restrictions in the checked author version. These differences prevent direct transfer of their theorems, not reuse of their classical CF principle. An author erratum to \cite{gl22} corrects a local contrast-bound argument; the finite-dimensional inverse here uses neither that bound nor its rate conclusions. Version-specific access details and unresolved formula comparisons are recorded in the literature matrix.
+
+\paragraph{Higher-lag moment correction.}
+For centered iid innovations and recording errors with the necessary integrability, put
+$M_k=\E[Y_k\sgn(Y_0)|Y_0|^p]$. Multiplying
+$Y_k-\phi Y_{k-1}=\xi_k+\varepsilon_k-\phi\varepsilon_{k-1}$
+by the time-zero instrument gives $M_k=\phi M_{k-1}$ for $k\ge2$, by independence and zero means. Consequently $M_{2\ell}/M_\ell=\phi^\ell$ whenever $M_\ell\ne0$. This is the scalar counterpart of existing high-lag errors-in-variables methods \cite{zw}. Unlike the CF ratio, it directly recovers $r_\ell$, but it needs its moments and nonzero denominator. Independent Cauchy recording errors violate those moment assumptions while retaining a nonzero CF. This distinction in applicability is not a general efficiency or novelty claim.
+
+\paragraph{Status of the literature comparison.}
+The supplementary matrix distinguishes current primary texts, previously checked author versions and abstract-only access. Formula-level comparison with the final Cheng--Hu--Long article and the final typeset Knight--Yu article remains incomplete. In particular, an equivalent clean-signal finite inverse could overlap substantially after combination with classical noise cancellation. The comparison supports the stated scope distinctions without certifying priority of the three- or five-feature inverse.
+
+\section{Independent correlated Gaussian noise}\label{app:gaussian}
+Consider the separate extension $Y_j=X_j+G_j+\varepsilon_j$, where $G$ is stationary Gaussian, $q_\ell=\Cov(G_0,G_\ell)$, and $X,G,\varepsilon$ are mutually independent. Its positive-lag interaction is
+\begin{equation}\label{eq:gaussian}
+F_\ell(u,v)=D_\ell(u,v;\theta)-q_\ell uv.
+\end{equation}
+This is not arbitrary non-Gaussian correlated noise.
+
+\begin{theorem}[Five-feature global inverse with correlated Gaussian noise]\label{thm:five}
+Fix $a>1$, $u>0$, $\ell\ge1$ and $d\in\{-1,1\}$. In the extension \eqref{eq:gaussian}, the five defined interactions
+\[
+F_\ell(u,du),\quad F_\ell(au,dau),\quad F_\ell(a^2u,da^2u),\quad
+F_{2\ell}(u,du),\quad F_{2\ell}(au,dau)
+\]
+globally identify $(\kappa,\alpha,C,q_\ell,q_{2\ell})$ for $1<\alpha<2$.
+The map has rank five and a uniform inverse bound on every compact interior parameter set. Five is the minimum number of real features for a continuously differentiable joint-identification map with full column rank on an open five-dimensional parameter domain.
+\end{theorem}
+\begin{proof}
+In the displayed order denote the five values by $F_1,\ldots,F_5$ and put
+\[
+B_1=F_2-a^2F_1,\qquad B_2=F_3-a^2F_2,\qquad B_3=F_5-a^2F_4.
+\]
+Quadratic Gaussian terms cancel, while stable homogeneity gives, with $D_1=D_\ell(u,du)$ and $D_3=D_{2\ell}(u,du)$,
+\[
+B_1=(a^\alpha-a^2)D_1,\quad B_2=a^\alpha B_1,\quad B_3=(a^\alpha-a^2)D_3.
+\]
+Here $B_1\ne0$. Consequently recover
+\[
+\alpha=\frac{\log(B_2/B_1)}{\log a},\qquad
+D_1=\frac{B_1}{a^\alpha-a^2},\quad D_3=\frac{B_3}{a^\alpha-a^2}.
+\]
+Apply \eqref{eq:inverse} to $(-dD_1,-da^\alpha D_1,-dD_3)$ to recover $r,\kappa,C$. Finally
+\[
+q_\ell=\frac{D_1-F_1}{d u^2},\qquad q_{2\ell}=\frac{D_3-F_4}{d u^2}.
+\]
+All inverse operations are $C^1$ locally on the model image, by $\alpha<2$ and $q'_{m,\alpha}>0$. Differentiating the inverse identity proves rank five. The compact inverse-bound proof in Theorem~\ref{thm:three} applies without change.
+The two covariance coordinates are locally unrestricted: independent unit-variance Gaussian white noises $\xi,\eta$ give
+$G_t=\xi_t+q_\ell\xi_{t-\ell}+\eta_t+q_{2\ell}\eta_{t-2\ell}$,
+whose two specified positive-lag covariances are precisely $(q_\ell,q_{2\ell})$. Thus the joint parameter domain contains an open subset of $\R^5$, and fewer than five real rows cannot have column rank five. This is a regular-rank lower bound, not a claim about arbitrary discontinuous encodings or minimal features for the target alone.
+\end{proof}
+
+
+For completeness, in the displayed feature order and parameter order $(\kappa,\alpha,C,q_\ell,q_{2\ell})$, put $z=Cu^\alpha m_\alpha(r)$, $t=a^\alpha$, $c=t-a^2$, and $q=m_\alpha(r^2)/m_\alpha(r)$. Then
+\begin{equation}\label{eq:fivedet}
+\det J_F=(-d)u^4c^3z^2(z/C)t\log(a)h\ell r q'_{m,\alpha}(r)\ne0.
+\end{equation}
+Indeed set $x=-dF$. The linear transformation $x\mapsto(x_2-a^2x_1,x_3-a^2x_2,x_5-a^2x_4,x_1,x_4)$ has determinant one. Its first three outputs are $(cz,tcz,cqz)$, with determinant $c^3z^2$ in $(z,t,q)$; the remaining nuisance block contributes $u^4$. The determinant of $(z,t,q)$ in $(\kappa,\alpha,C)$ is $(z/C)t\log(a)h\ell r q'$. Returning from $x$ to $F$ contributes $-d$.
+
+The inverse recovers the two specified nuisance covariances; the rest of the Gaussian covariance function remains unrestricted. The factor $a^\alpha-a^2$ makes the inverse increasingly sensitive near $\alpha=2$.
+
+
+At $\alpha=2$, take independent Gaussian OU processes $A,B$ with different drifts. The same law $Y=A+B$ admits either one as the latent signal and the other as Gaussian recording noise. Thus unrestricted correlated Gaussian errors can destroy identification at that endpoint even from the complete observation law.
+
+\paragraph{Finite-grid profiling and sensitivity.}
+For grid cells $(\ell_i,u_i,v_i)$, let the nuisance matrix have entries $V_{i\ell}=-u_iv_i\mathbf1_{\ell_i=\ell}$ and let $P$ project orthogonally off its columns. Profiling gives the criterion $\norm{P\widehat d-CPg(\kappa,\alpha)}^2$, where $g_i=D_{\ell_i}(u_i,v_i;\kappa,\alpha,1)$. With $p$ cells and $d$ nonzero nuisance columns, $\operatorname{rank}(PJ)\le\min(3,p-d)$. The baseline three cells use two lags and leave only one projected direction, so Theorem~\ref{thm:three} alone does not certify this extension; Theorem~\ref{thm:five} supplies the additional cells.
+
+For a fixed grid and fixed $\kappa,C$, $Pg(2)=0$. Put $\beta=2-\alpha$ and $H=P\partial_\alpha g(2)$. Taylor expansion gives $Pg(2-\beta)=-\beta H+O(\beta^2)$ and
+\[
+Pg(2-\beta)+\beta P\partial_\alpha g(2-\beta)
+=-\int_{2-\beta}^2(2-s)P\partial_\alpha^2g(s)\,ds=O(\beta^2).
+\]
+For the projected Jacobian in $(\log\kappa,\alpha,\log C)$, its action on the unit vector $(0,\beta,1)^\top/\sqrt{1+\beta^2}$ is therefore $O(\beta^2)$. Hence its smallest singular value is at most of that order; if $H\ne0$ the condition number is at least of order $\beta^{-2}$. These are fixed-design sensitivity statements, not Fisher-information or minimax bounds.
+
+Stationarity of $G$ alone is insufficient for the preceding inference theory. For example, $G_j=Z$ for every $j$, with a single independent Gaussian $Z$, makes the empirical marginal CF converge to $e^{iuZ}\chi_X(u)$, not the population $\chi_G(u)\chi_X(u)$. Additional temporal assumptions are necessary even for the law of large numbers. Positive-lag $q_\ell$ also cannot identify how white Gaussian variance is allocated between $G$ and unrestricted iid $\varepsilon$.
+
+\section{A fixed-number batch calibration}\label{app:calibration}
+The multivariate fixed-number batch principle of Mu\~noz and Glynn \cite[Section 2.2, Example 1]{mg} specializes to the present bounded influence vector as follows.
+On a deterministic separated three-cell grid assume $\Gamma\succ0$. Fix an integer $K>3$, set $b=\lfloor M/K\rfloor$, and let $\overline{\widehat\Psi}_k$ be the mean over consecutive block $k$ of length $b$. Center the $K$ block means by their average $\overline{\widehat\Psi}_{\cdot}$ and define
+\[
+\widehat\Gamma_{K}=\frac{b}{K-1}\sum_{k=1}^K
+(\overline{\widehat\Psi}_k-\overline{\widehat\Psi}_{\cdot})
+(\overline{\widehat\Psi}_k-\overline{\widehat\Psi}_{\cdot})^\top.
+\]
+\begin{proposition}[Fixed-$K$ pivot]\label{prop:batch}
+Under these assumptions,
+\[
+n\{\hD-F(\theta_0)\}^\top\widehat\Gamma_K^{-1}\{\hD-F(\theta_0)\}
+\Rightarrow \frac{3(K-1)}{K-3}F_{3,K-3}.
+\]
+\end{proposition}
+\begin{proof}
+The bounded-vector functional CLT used in Theorem~\ref{thm:clt} makes the $K$ consecutive, normalized true influence block sums converge jointly to independent $Z_k\sim N_3(0,\Gamma)$. Discarding at most $K-1$ observations is negligible at root-$M$ scale, and $Kb/n\to1$. The estimated log derivative is consistent. For centered block means its coefficient error multiplies centered raw-transform block means of order $O_p(b^{-1/2})$, hence its effect on the normalized block sums is $o_p(1)$. Thus the endpoint and covariance converge jointly to
+$\sqrt K\bar Z$ and $S_Z=(K-1)^{-1}\sum_k(Z_k-\bar Z)(Z_k-\bar Z)^\top$.
+Normal sample-mean/covariance independence and the Wishart law give
+$K\bar Z^\top S_Z^{-1}\bar Z\sim3(K-1)F_{3,K-3}/(K-3)$.
+For $K>3$, $S_Z$ is positive definite almost surely, permitting continuous inversion.
+\end{proof}
+With fixed $K$, $\widehat\Gamma_K$ has a nondegenerate random limit, so the $F$ reference cannot be replaced by chi-square. The simulations use $K=20$ fixed before execution. The proposition requires the displayed fixed-grid assumptions and does not cover unrestricted same-record frequency selection.
+
+\section{Technical proofs for estimation and coverage}\label{app:technical}
+\subsection{Dependence and consistency}\label{proof:dependence}
+\begin{proof}[Proof of Lemma~\ref{lem:mix}]
+Put $U_j=X_j-\mu$, let $\nu$ be its stationary law, and let $p_\alpha$ be the density with CF $e^{-|t|^\alpha}$. First,
+\[
+\E|U_0|=\frac2\pi\int_0^\infty\frac{1-e^{-Ct^\alpha}}{t^2}\,dt<\infty:
+\]
+the integrand is $O(t^{\alpha-2})$ near zero and $O(t^{-2})$ at infinity. Also $\norm{p_\alpha'}_1<\infty$. To verify this directly, Fourier inversion represents $p_\alpha'(x)$ by the sine transform of $G(t)=te^{-t^\alpha}$. Both $G$ and
+\[
+G''(t)=\{-\alpha(\alpha+1)t^{\alpha-1}+\alpha^2t^{2\alpha-1}\}e^{-t^\alpha}
+\]
+are integrable. Two integrations by parts give $|p_\alpha'(x)|\le\norm{G''}_1/(\pi x^2)$ away from zero, while $\norm{G}_1/\pi$ bounds it everywhere. These bounds imply integrability.
+
+The $k$-step transition is the law of $\phi^k x+s_kZ$, where
+$s_k=\{C(1-\phi^{k\alpha})\}^{1/\alpha}\ge s_h$.
+Translation of a differentiable density and the fundamental theorem of calculus give
+\[
+\norm{P^k(x,\cdot)-P^k(x',\cdot)}_{\rm TV}
+\le\frac{\phi^k|x-x'|}{2s_k}\norm{p_\alpha'}_1.
+\]
+Total variation here is the supremum over events. Using $\nu P^k=\nu$ and integrating against two independent stationary draws,
+\begin{equation}\label{eq:mixbound}
+\int\norm{P^k(x,\cdot)-\nu}_{\rm TV}\nu(dx)
+\le \phi^k\norm{p_\alpha'}_1\E|U_0|/s_h=:K\phi^k.
+\end{equation}
+For a future observation event $B$, integrate its future iid errors and condition on $U_k$ to obtain a measurable function $b\in[0,1]$. Conditional on the latent and error past through zero, its probability is $P^kb(U_0)$; unconditionally it is $\nu b$. Multiplying their difference by any past observation indicator and applying \eqref{eq:mixbound} proves the asserted strong mixing bound. This uses bounded conditional probabilities only, never an error moment.
+\end{proof}
+
+\begin{proof}[Proof of Proposition~\ref{prop:cons}]
+Lemma~\ref{lem:mix} implies ergodicity. Birkhoff's theorem applied to each bounded joint and marginal transform gives convergence of every empirical CF. By \eqref{eq:safe}, the floors are eventually inactive, and $\hD_{S,\rho}\to F(\theta_0)$ almost surely. Continuity of $F$ and compactness imply uniform convergence of $Q_n$ to
+$Q(\theta)=\norm{F(\theta_0)-F(\theta)}_W^2$. Its unique zero is $\theta_0$ by injectivity and positive definiteness of $W$. Outside every neighborhood of $\theta_0$, compactness gives a positive criterion gap. Uniform convergence and $e_n\to0$ force the estimate inside that neighborhood eventually.
+\end{proof}
+
+\subsection{Interaction and parameter limits}\label{proof:limits}
+\begin{proof}[Proof of Theorem~\ref{thm:clt}]
+$V_t$ is bounded and measurable over $[t,t+L]$, so for $k>L$ its mixing coefficient is at most $K\phi^{k-L}$. The bounded-variable multivariate mixing CLT, indeed functional CLT, applies \cite{dmr}. Absolute covariance summability also follows from the inequality
+$|\Cov(R,T)|\le4\norm{R}_\infty\norm{T}_\infty a$ for separated sigma fields. Thus the common-prefix mean of $V_t$ has a normal limit with covariance $\Sigma=\sum_k\Cov(V_0,V_k)$, including degenerate directions.
+
+Replacing a cell's common-prefix mean by its original lag-specific mean changes a complex component by at most $2(L-\ell_i)/N_i=O(n^{-1})$. This endpoint difference is negligible at the root-$n$ scale, and $M/n\to1$.
+At nonzero $z$, the differential of $\log|z|$ is $\Re(dz/z)$. The map is twice continuously differentiable on a neighborhood of the finitely many population CFs, so its Taylor remainder is $O_p(n^{-1})$. The derivative applied to $V_t-\E V_t$ is exactly \eqref{eq:psi}; $+1$ centers the three normalized terms. This proves the expansion and $\Gamma=T\Sigma T^\top$, where $T$ is that derivative. Boundedness and geometric mixing give absolute summability for $\Psi$ as well.
+\end{proof}
+
+\begin{proof}[Proof of Theorem~\ref{thm:md}]
+The compact criterion-gap proof gives consistency in probability since $e_n=o_p(1)$. Put $\delta_n=\hD_{S,\rho}-F(\theta_0)=O_p(n^{-1/2})$. Comparison with the feasible truth gives
+\[
+\norm{F(\widehat\theta_n)-F(\theta_0)}_W
+\le\norm{\delta_n}_W+(\norm{\delta_n}_W^2+e_n)^{1/2}
+=O_p(n^{-1/2}).
+\]
+Full rank and the $C^1$ expansion at $\theta_0$ give a local lower bound proportional to $\norm{\theta-\theta_0}$. Consistency therefore yields
+$t_n=\sqrt n(\widehat\theta_n-\theta_0)=O_p(1)$.
+With $Z_n=\sqrt n\delta_n$, uniformly for bounded $t$,
+\[
+n\{Q_n(\theta_0+t/\sqrt n)-Q_n(\theta_0)\}
+=t^\top H_0t-2t^\top J_0^\top WZ_n+o_p(1).
+\]
+The quadratic minimizer is $t_n^*=A_0Z_n=O_p(1)$ and is feasible after rescaling with probability tending to one by interiority. Comparing the approximate minimizer with $t_n^*$ and completing the square gives
+$(t_n-t_n^*)^\top H_0(t_n-t_n^*)=o_p(1)$, because $ne_n=o_p(1)$. Positive definiteness of $H_0$ and Theorem~\ref{thm:clt} prove the result. The argument requires only $C^1$ smoothness of $F$, even at cancellation cells.
+\end{proof}
+
+\subsection{Covariance estimation and regular contrasts}\label{proof:covariance}
+\begin{proof}[Proof of Theorem~\ref{thm:hac}]
+First use the bounded true mean-zero $\Psi_t$ without sample centering. For each entry of the lag-$k$ product $\Psi_t\Psi_{t+k}^\top$, the observation window has length at most $k+L+1$. Covariances between two such products are uniformly bounded for at most $k+L$ overlapping offsets and geometrically bounded thereafter by Lemma~\ref{lem:mix}. Thus the variance of its average, with denominator $M$, is at most $K_1(k+L+1)/M$. In fixed dimension, Cauchy--Schwarz yields
+\[
+\sum_{k=0}^B\E\norm{\widetilde\gamma_k-\E\widetilde\gamma_k}
+\le\frac{K_2}{\sqrt M}\sum_{k=0}^B\sqrt{k+L+1}
+=O(B^{3/2}/\sqrt M)=o(1).
+\]
+The oracle mean is $(1-k/M)\gamma_k$, where $\gamma_k=\E(\Psi_0\Psi_k^\top)$. Absolute summability and $B/M\to0$ remove both Bartlett weighting and endpoint biases by dominated convergence.
+
+The CF CLT and separation give
+$\sup_{t<M}\norm{\widehat\Psi_t-\Psi_t}=O_p(n^{-1/2})$.
+The true sample mean is $O_p(M^{-1/2})$. Centering and substituting the estimated CF coefficients therefore perturb the lag-window sum by $O_p(B/\sqrt n)=o_p(1)$. This proves consistency.
+
+For positive semidefiniteness extend $z_t=0$ outside $0\le t<M$. Counting each pair's occurrence in windows of length $B+1$ gives the exact identity
+\begin{equation}\label{eq:psd}
+\hG_B=\frac1{M(B+1)}\sum_{s=-B}^{M-1}
+\left(\sum_{r=0}^Bz_{s+r}\right)\left(\sum_{r=0}^Bz_{s+r}\right)^\top.
+\end{equation}
+Every term is positive semidefinite.
+\end{proof}
+
+\begin{proof}[Proof of Corollary~\ref{cor:wald}]
+Consistency and continuity make $\widehat J^\top W\widehat J\to H_0$, which is invertible. Continuous mapping gives $\widehat V\to V$. Positive limiting contrast variance and Slutsky's theorem give the pivot.
+\end{proof}
+
+\subsection{Finite-record coverage and contraction}\label{proof:honest}
+\begin{proof}[Proof of Theorem~\ref{thm:honest}]
+The Fourier argument in Lemma~\ref{lem:mix} gives
+$|p_\alpha'(x)|\le\min(A_\alpha,B_\alpha/x^2)$, since
+\[
+\frac1\pi\int_0^\infty|G''(t)|dt
+\le\frac{\alpha(\alpha+1)\int t^{\alpha-1}e^{-t^\alpha}dt+
+\alpha^2\int t^{2\alpha-1}e^{-t^\alpha}dt}{\pi}=B_\alpha.
+\]
+Integration of the minimum gives $\|p_\alpha'\|_1\le4\sqrt{A_\alpha B_\alpha}$. The first moment is
+$\E|U_0|=2C^{1/\alpha}\Gamma_{\!E}(1-1/\alpha)/\pi$, obtained from the integral in that lemma by integration by parts. Hence \eqref{eq:explicitK} is a valid mixing constant, independent of $C$, location and recording errors.
+
+For a unit-modulus complex transform with observation span $s$, the real part of its lag-$k$ complex covariance has absolute value at most one. At separation $k>s$, applying the real covariance inequality to real and imaginary parts also bounds it by $8K\phi^{k-s}$. Expanding the squared error of the average yields
+$\E|\widehat\chi-\chi|^2\le v_\theta(N,s)$; the separate bound one follows from Jensen's inequality. Chebyshev's inequality and a union bound over $3p$ means show that all their errors are within the displayed deltas with probability at least $1-\zeta$. Clipping a delta at two preserves this statement, since two is a deterministic error bound.
+
+At the true parameter, the full complex CF identity is
+$e^{-D_i(\theta_0)}j_i=a_ib_i$, even at noise-CF zeros. Indeed the centered stable joint and marginal CFs are positive real, and both the signal-location phase and the error CF factors cancel. Since all empirical and population CF moduli are at most one,
+$|\widehat a_i\widehat b_i-a_ib_i|\le|\widehat a_i-a_i|+|\widehat b_i-b_i|$.
+The preceding simultaneous error event therefore implies \eqref{eq:honest} at $\theta_0$. This proves fixed-grid coverage. A second countable union bound, $\sum_j\zeta_j=\zeta$, makes the error event simultaneous over every grid before selection, proving selected-grid coverage.
+
+For contraction, the proof of Theorem~\ref{thm:adaptive} reduces eventual selection to a finite family with population CF minima at least $\tau$. On compact $\Theta$, $K(\theta)$, the geometric sum, and $e^{-D_i(\theta)}$ are uniformly bounded, so the right side of \eqref{eq:honest} tends uniformly to zero over that family. Strong laws make the empirical residual converge uniformly in $\theta$ to
+$a_ib_i[e^{D_i(\theta_0)-D_i(\theta)}-1]$.
+Nonzero $a_ib_i$ and Theorem~\ref{thm:three} make its common zero unique. Compactness gives a positive residual gap outside every neighborhood of $\theta_0$, excluding all such candidates eventually. This is containment, not an assertion of eventual nonemptiness or eventual coverage one.
+\end{proof}
+
+\section{Additional parameter stress checks}\label{app:additional}
+The following checks vary one central parameter at a time using the design in Section~\ref{sec:numerics}. Each row uses 200 independent latent paths; clean and Cauchy observations are paired within the parameter group. The displayed coverage is an adaptive-grid diagnostic.
+
+\begin{table}[htbp]\centering\small
+\caption{Scope checks at $n=32{,}000$, all using the adaptive rule. Conditional RMSE and all-attempt coverage have different denominators. Batch coverage is diagnostic after selection.}\label{tab:scope}
+\begin{tabular}{llrrrrr}\toprule
+Parameter case & noise & inversions & RMSE $\kappa$ & RMSE $\alpha$ & RMSE $C$ & Batch $K/N$\\ \midrule
+near one & Clean & 196/200 & 0.040 & 0.049 & 0.041 & 187/200 \\
+ & Cauchy & 192/200 & 0.048 & 0.050 & 0.041 & 189/200 \\
+\addlinespace[0.6ex]
+near two & Clean & 191/200 & 0.044 & 0.025 & 0.030 & 191/200 \\
+ & Cauchy & 188/200 & 0.052 & 0.028 & 0.033 & 189/200 \\
+\addlinespace[0.6ex]
+slow & Clean & 200/200 & 0.022 & 0.071 & 0.068 & 174/200 \\
+ & Cauchy & 200/200 & 0.026 & 0.073 & 0.068 & 187/200 \\
+\addlinespace[0.6ex]
+fast & Clean & 200/200 & 0.285 & 0.033 & 0.059 & 189/200 \\
+ & Cauchy & 200/200 & 0.343 & 0.047 & 0.076 & 190/200 \\
+\addlinespace[0.6ex]
+large scale & Clean & 200/200 & 0.050 & 0.039 & 0.173 & 185/200 \\
+ & Cauchy & 200/200 & 0.053 & 0.040 & 0.176 & 184/200 \\
+\bottomrule\end{tabular}
+\end{table}
+
+\begin{thebibliography}{99}\small\raggedright\setlength{\itemsep}{1pt}\setlength{\parskip}{0pt}
+\bibitem{nw} J. Nowicka and A. Weron (1997). Measures of dependence for ARMA models with stable innovations. \emph{Annales UMCS, Sectio A} 51(1), 133--144. \href{https://bc.umcs.pl/Content/30455/PDF/czas4050_51_1_1997_14.pdf}{Institutional full text}.
+\bibitem{rd} D. Rosadi and M. Deistler (2011). Estimating the codifference function of linear time series models with infinite variance. \emph{Metrika} 73, 395--429. \href{https://doi.org/10.1007/s00184-009-0285-9}{doi:10.1007/s00184-009-0285-9}.
+\bibitem{rosadi} D. Rosadi (2004). \emph{The codifference function for alpha-stable processes: estimation and inference}. Doctoral thesis, TU Wien, Chapters 4--5. \href{https://repositum.tuwien.at/handle/20.500.12708/14337}{Institutional record}.
+\bibitem{ky} J. L. Knight and J. Yu (2002). Empirical characteristic function in time series estimation. \emph{Econometric Theory} 18(3), 691--721. \href{https://doi.org/10.1017/S026646660218306X}{doi:10.1017/S026646660218306X}.
+\bibitem{tl} E. Taufer and N. N. Leonenko (2009). Characteristic function estimation of non-Gaussian Ornstein--Uhlenbeck processes. \emph{Journal of Statistical Planning and Inference} 139, 3050--3063. \href{https://doi.org/10.1016/j.jspi.2009.02.007}{doi:10.1016/j.jspi.2009.02.007}.
+\bibitem{chl} Y. Cheng, Y. Hu and H. Long (2020). Generalized moment estimators for $\alpha$-stable Ornstein--Uhlenbeck motions from discrete observations. \emph{Statistical Inference for Stochastic Processes} 23, 53--81. \href{https://doi.org/10.1007/s11203-019-09201-4}{doi:10.1007/s11203-019-09201-4}.
+\bibitem{gl} E. Gassiat, S. Le Corff and L. Leh\'ericy (2020). Identifiability and consistent estimation of nonparametric translation hidden Markov models with general state space. \emph{JMLR} 21(115), 1--40. \href{https://www.jmlr.org/papers/volume21/19-802/19-802.pdf}{Full text}.
+\bibitem{zw} W. \.Zu{\l}awi\'nski and A. Wy{\l}oma\'nska (2024). Errors-in-variables-based methodology of estimation and testing for infinite-variance periodic autoregressive models with additive noise. \emph{EUSIPCO 2024}, 1087--1091. \href{https://eurasip.org/Proceedings/Eusipco/Eusipco2024/pdfs/0001087.pdf}{Proceedings full text}.
+\bibitem{dmr} P. Doukhan, P. Massart and E. Rio (1994). The functional central limit theorem for strongly mixing processes. \emph{Annales de l'IHP, Probabilit\'es et Statistiques} 30(1), 63--82. \href{https://www.numdam.org/item/AIHPB_1994__30_1_63_0/}{Journal archive}.
+\bibitem{nw_hac} W. K. Newey and K. D. West (1987). A simple, positive semi-definite, heteroskedasticity and autocorrelation consistent covariance matrix. \emph{Econometrica} 55(3), 703--708. \href{https://doi.org/10.2307/1913610}{doi:10.2307/1913610}.
+
+\bibitem{gl22} E. Gassiat, S. Le Corff and L. Leh\'ericy (2022). Deconvolution with unknown noise distribution is possible for multivariate signals. \emph{Annals of Statistics} 50(1), 303--323. \href{https://doi.org/10.1214/21-AOS2106}{doi:10.1214/21-AOS2106}.
+\bibitem{repeat} J. Capitao-Miniconi, E. Gassiat and L. Leh\'ericy (2025). Deconvolution of repeated measurements corrupted by unknown noise. \emph{Electronic Journal of Statistics} 19(2), 4141--4173. \href{https://doi.org/10.1214/25-EJS2415}{doi:10.1214/25-EJS2415}.
+\bibitem{mg} D. F. Mu\~noz and P. W. Glynn (2001). Multivariate standardized time series for steady-state simulation output analysis. \emph{Operations Research} 49(3), 413--422. \href{https://doi.org/10.1287/opre.49.3.413.11209}{doi:10.1287/opre.49.3.413.11209}.
+\bibitem{dufour} J.-M. Dufour (1997). Some impossibility theorems in econometrics with applications to structural and dynamic models. \emph{Econometrica} 65(6), 1365--1387. \href{https://doi.org/10.2307/2171740}{doi:10.2307/2171740}.
+\bibitem{cms} J. M. Chambers, C. L. Mallows and B. W. Stuck (1976). A method for simulating stable random variables. \emph{Journal of the American Statistical Association} 71(354), 340--344. \href{https://doi.org/10.1080/01621459.1976.10480344}{doi:10.1080/01621459.1976.10480344}.
+
+\end{thebibliography}
+\end{document}
