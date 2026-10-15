@@ -1,5 +1,5 @@
 cff-version: 1.2.0
-message: "Please cite the manuscript and this versioned research package."
+message: "Please cite the article and this versioned research package."
 title: "Finite-Feature Identification of Stable Ornstein-Uhlenbeck Dynamics with Unknown Observation Noise"
 authors:
   - family-names: "ZHANG"

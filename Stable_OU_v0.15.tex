@@ -1,4 +1,3 @@
-% AUTHORITATIVE LIVE-EDITED MANUSCRIPT: preserve in-place editorial changes.
 \documentclass[11pt,a4paper]{article}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern,amsmath,amssymb,amsthm,mathtools,booktabs,array,microtype}
@@ -41,7 +40,6 @@
 \DeclareMathOperator{\diag}{diag}\DeclareMathOperator{\sgn}{sgn}
 \DeclareMathOperator{\Vol}{Vol}\DeclareMathOperator*{\argmin}{arg\,min}
 \title{\vspace{-1.5em}Finite-Feature Identification of Stable\\Ornstein--Uhlenbeck Dynamics\\with Unknown Observation Noise}
-% Author details supplied by the author. Undergraduate status is not an academic title.
 \author{ZHANG WENHAN\\[0.4em]
 \small Institute of Mathematical Sciences, Faculty of Science\\
 \small Universiti Malaya, 50603 Kuala Lumpur, Malaysia\\
@@ -68,7 +66,7 @@ Proposition~\ref{prop:frequency} quantifies the sensitivity of the inverse and t
 \paragraph{Relation to previous work.}
 Stable AR(1) codifference kernels are established \cite{nw,rd,rosadi}, as are empirical characteristic-function estimation and non-Gaussian OU estimation \cite{ky,tl,chl}. Positive-lag iid-noise cancellation follows from independent-component CF factorization. Unknown-noise cross-product contrasts \cite{gl,gl22} exploit this factorization under different signal assumptions; high-lag errors-in-variables methods address noisy infinite-variance autoregression under suitable integrability \cite{zw}. The doubled-lag statistic used here is algebraically available from normalized codifferences. Our analysis supplies its strict whole-domain inversion for the specified features and the associated sensitivity results. Appendix~\ref{app:comparison} gives direct algebraic and assumption comparisons; the supplementary literature matrix records unresolved version-specific comparisons. No priority claim is made for the underlying codifference, ECF or batch-calibration principles.
 
-Sections~\ref{sec:model}--\ref{sec:id} present the model and identification argument. Sections~\ref{sec:stats}--\ref{sec:limits} give estimation and inferential guarantees, with technical proofs collected in Appendix~\ref{app:technical}. Section~\ref{sec:numerics} reports paired numerical diagnostics, and Section~\ref{sec:discussion} discusses their implications. Reproduction records and code accompany the manuscript as supplementary material.
+Sections~\ref{sec:model}--\ref{sec:id} present the model and identification argument. Sections~\ref{sec:stats}--\ref{sec:limits} give estimation and inferential guarantees, with technical proofs collected in Appendix~\ref{app:technical}. Section~\ref{sec:numerics} reports paired numerical diagnostics, and Section~\ref{sec:discussion} discusses their implications. Reproduction records and code accompany this article as supplementary material.
 
 \section{Model and the noise-invariant interaction}\label{sec:model}
 Let the latent process be the stationary solution of
@@ -625,12 +623,8 @@ The author declares no competing interests.
 The code and simulation data are available in release v0.15 of the public repository, \url{https://github.com/vincent-zhang0116/stable-ou-identification}. The supplementary research package contains the simulation source, frozen configurations, per-path feature and decision records, selected complete raw paths, generator inputs, checksums and reproduction commands. It includes the original 1,500-path experiment and the independent 700-path diagnostic study. A full rerun of the original study reproduces all 36,000 point-status and coverage decisions and the 108 summary scenarios within the documented numerical tolerance. The supplement distinguishes numerical agreement from bytewise identity and records the execution environments.
 
 \paragraph{AI-assisted preparation.}
-An AI assistant supported manuscript preparation, code development, and mathematical and numerical checks.
+Generative AI tools assisted with language editing, code development, and mathematical and numerical checks.
 
-% Funding and competing-interest statements were confirmed by the author.
-% REMAINING SUBMISSION DETAILS:
-% Public repository: GitHub release v0.15; no DOI has been assigned.
-% Target journal: apply its template, anonymization policy, and disclosure requirements.
 
 \appendix
 \numberwithin{equation}{section}
