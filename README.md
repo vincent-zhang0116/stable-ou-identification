@@ -1,54 +1,51 @@
 # Stable OU identification under unknown observation noise
 
-Research materials accompanying *Finite-Feature Identification of Stable Ornstein-Uhlenbeck Dynamics with Unknown Observation Noise*.
+Research materials accompanying *Identification of Stable Ornstein-Uhlenbeck Dynamics under Unknown Observation Noise*.
 
-ZHANG WENHAN  
-Institute of Mathematical Sciences, Faculty of Science, Universiti Malaya, Malaysia  
-Contact: 24084017@siswa.um.edu.my
+ZHANG WENHAN, Institute of Mathematical Sciences, Faculty of Science, Universiti Malaya, Malaysia. Contact: 24084017@siswa.um.edu.my.
 
 ## Research materials
 
-- [Release v0.15](https://github.com/vincent-zhang0116/stable-ou-identification/releases/tag/v0.15)
-- [Complete code and simulation data](https://github.com/vincent-zhang0116/stable-ou-identification/releases/download/v0.15/Stable_OU_v0.15_research_materials.zip)
-- [Article source](Stable_OU_v0.15.tex)
-- [Related-literature comparison](literature_matrix.csv)
+Version 0.22 contains the code and simulation records for the study. Download the [complete research archive](https://github.com/vincent-zhang0116/stable-ou-identification/releases/download/v0.22/Stable_OU_Research_Materials_v0.22.zip) from the [versioned release](https://github.com/vincent-zhang0116/stable-ou-identification/releases/tag/v0.22). The `code/` directory provides a browsable copy of the Python sources and configurations; reproduction requires the complete archive, including its recorded random streams and results.
 
-The release contains the simulation programs, fixed configurations, per-path results, selected complete sample paths, numerical checks and reproduction instructions. Download the named research-materials ZIP; GitHub's automatically generated source archives contain only the repository files.
-
-## Simulation studies
-
-The baseline study uses 1,500 independent latent paths and records 36,000 paired method/scenario outcomes across 108 summary scenarios. An additional study uses 700 independent paths for frequency selection, a scalar moment comparator and correlated-Gaussian-noise diagnostics. Multiple outcomes from the same path are paired observations.
-
-A complete baseline rerun reproduced all point-status and coverage decisions. Maximum absolute parameter-estimate differences were approximately 4.96e-13. Floating-point arrays are compared numerically across environments. Twelve complete baseline paths with observation variants are included; the remaining paths can be regenerated from the recorded random-generator inputs.
+The archive contains 6,050 independent latent paths: 1,500 baseline, 700 diagnostic, 2,500 confirmation and 1,350 finite-variance and cusp paths. Its 125,520 method records include failed fits and constrained boundary returns. Methods, error laws and sample prefixes are paired within paths. Six supplementary diagnostic tables and source-to-display mappings are included.
 
 ## Reproduction
 
-Extract the research-materials ZIP and run the following commands from its top-level directory. The diagnostic environment uses Python 3.13.16, NumPy 2.5.4 and SciPy 1.18.1.
+Extract the research archive and run from `Stable_OU_Research_Materials/`, using Python 3.13.16 and the pinned dependencies:
 
-```powershell
-$env:OPENBLAS_NUM_THREADS='1'
-$env:OMP_NUM_THREADS='1'
-python -m pip install -r requirements.txt
-python verify_public_release.py
-python analysis/check_added_results.py
+```text
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python reproduce.py --destination rebuilt
 ```
 
-Rerun the baseline simulation into a separate directory:
+On Unix-like systems, replace `.venv\Scripts\python` with `.venv/bin/python`. The default command reconstructs the article displays and supplementary diagnostic tables. To rerun all 6,050 paths and reconstruct the displays:
 
-```powershell
-python original_v013/source/experiment.py --config original_v013/config.json --out independent_rerun --workers 4
+```text
+.venv\Scripts\python reproduce.py --destination full_rerun --fits
 ```
 
-The archive README describes the additional simulations, recorded variables and numerical tolerances. The article source is self-contained and compiles with a standard LaTeX distribution.
+Use a new destination for each run. The archive checks source and data hashes before reconstruction. Historical directory names are retained to preserve imports and recorded provenance.
 
-## Diagnostic results
+## Verification and scope
 
-![Frequency and Gaussian-endpoint diagnostics](diagnostics.png)
+All 6,050 paths were rerun internally in an isolated environment on the same operating system. Return, coverage, boundary and accuracy decisions matched the stored records. The original Python 3.12 baseline has small floating-point differences under Python 3.13; use the numerical tolerances documented in the archive. Later studies matched their checked numerical values and array hashes. No third-party or second-operating-system reproduction is claimed.
 
-Short-record coverage and inversion near the Gaussian endpoint can be poor. The article states the assumptions and limitations of each inferential result. Version-specific access limits for related work are recorded in the literature comparison.
+Complete arrays are retained for selected paths; remaining observations regenerate from recorded random streams. Fixed-bandwidth cusp experiments assess drift recovery, not the separate joint estimator's asymptotic rate. Optimizer convergence does not certify the global objective-gap condition of the statistical theorem.
+
+## Archive integrity
+
+```text
+101b2dc7b6cec528ef848388bd8f722c834506f2de7c258ddd6aa0b2e50e85dc  Stable_OU_Research_Materials_v0.22.zip
+```
+
+The research archive is byte-identical to the computational supplement supplied with the article. GitHub's automatically generated source archives contain repository files only; use the named release asset for the complete reproducibility package.
+
+## Earlier materials
+
+[Version 0.15](https://github.com/vincent-zhang0116/stable-ou-identification/releases/tag/v0.15) preserves the earlier baseline and diagnostic materials. `Stable_OU_v0.15.tex`, `diagnostics.png` and `literature_matrix.csv` in the repository are historical files from that version.
 
 ## Citation
 
-ZHANG WENHAN. *Finite-Feature Identification of Stable Ornstein-Uhlenbeck Dynamics with Unknown Observation Noise*. Research materials, version 0.15 (2026). https://github.com/vincent-zhang0116/stable-ou-identification/releases/tag/v0.15
-
-Funding, competing interests and AI-assistance declarations are provided in the article.
+ZHANG WENHAN (2026). *Identification of Stable Ornstein-Uhlenbeck Dynamics under Unknown Observation Noise: research materials*. Version 0.22. https://github.com/vincent-zhang0116/stable-ou-identification/releases/tag/v0.22

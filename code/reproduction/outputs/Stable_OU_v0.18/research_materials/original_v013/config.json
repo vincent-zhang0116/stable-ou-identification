@@ -1,0 +1,22 @@
+{
+  "description": "Frozen v0.13 independent reconstruction; scope validation and fixed-K batch means, not replay of historical experiments",
+  "master_seed": 202610142036,
+  "h": 0.05,
+  "u0": 0.5,
+  "rho": 0.05,
+  "tau": 0.2,
+  "batches": 20,
+  "box": [[0.05, 5.0], [1.05, 1.99], [0.01, 10.0]],
+  "raw_paths": 2,
+  "geometry_paths": 8,
+  "geometry_log2": 10,
+  "geometry_seed": 202610142037,
+  "groups": [
+    {"name": "central", "theta": [1.0,1.8,0.8], "paths": 500, "n": [2000,8000,32000,128000], "noises": ["clean","gaussian","cauchy","shifted_cauchy","uniform_zero","strong_gaussian"]},
+    {"name": "near_one", "theta": [1.0,1.15,0.8], "paths": 200, "n": [2000,8000,32000], "noises": ["clean","cauchy"]},
+    {"name": "near_two", "theta": [1.0,1.95,0.8], "paths": 200, "n": [2000,8000,32000], "noises": ["clean","cauchy"]},
+    {"name": "slow", "theta": [0.25,1.8,0.8], "paths": 200, "n": [2000,8000,32000], "noises": ["clean","cauchy"]},
+    {"name": "fast", "theta": [4.0,1.8,0.8], "paths": 200, "n": [2000,8000,32000], "noises": ["clean","cauchy"]},
+    {"name": "large_scale", "theta": [1.0,1.8,3.0], "paths": 200, "n": [2000,8000,32000], "noises": ["clean","cauchy"]}
+  ]
+}

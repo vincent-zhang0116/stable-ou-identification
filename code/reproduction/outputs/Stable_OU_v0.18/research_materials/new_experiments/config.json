@@ -1,0 +1,14 @@
+{
+  "master_seed": 202610150915,
+  "h": 0.05,
+  "theta": [1.0, 1.8, 0.8],
+  "box": [[0.05,5.0],[1.05,1.99],[0.01,10.0]],
+  "central_paths": 200,
+  "horizons": [8000,32000],
+  "frequencies": [0.5,0.25,0.125,0.0625],
+  "noises": ["clean","cauchy","strong_gaussian","uniform_zero"],
+  "five_alphas": [1.5,1.8,1.9,1.95,1.98],
+  "five_paths": 100,
+  "five_n": 32000,
+  "five_noise_scales": [1.0,2.0]
+}

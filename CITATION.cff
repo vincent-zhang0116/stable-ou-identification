@@ -1,10 +1,10 @@
 cff-version: 1.2.0
-message: "Please cite the article and this versioned research package."
-title: "Finite-Feature Identification of Stable Ornstein-Uhlenbeck Dynamics with Unknown Observation Noise"
+message: "Please cite this versioned research package and the associated article where available."
+title: "Identification of Stable Ornstein-Uhlenbeck Dynamics under Unknown Observation Noise: research materials"
 authors:
   - family-names: "ZHANG"
     given-names: "WENHAN"
-version: "0.15"
-date-released: "2026-10-15"
+version: "0.22"
+date-released: "2026-10-16"
 repository-code: "https://github.com/vincent-zhang0116/stable-ou-identification"
-url: "https://github.com/vincent-zhang0116/stable-ou-identification/releases/tag/v0.15"
+url: "https://github.com/vincent-zhang0116/stable-ou-identification/releases/tag/v0.22"
